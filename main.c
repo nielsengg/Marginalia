@@ -9,13 +9,15 @@ struct stru_option{
 };
 
 // Show a message and catch the local where the user want to go
-void getInput(){
+void getInput(int validation){
     printf("Choose a option: ");
     fgets(input, sizeof input, stdin);
 
     sscanf(input, "%ld", &cursor);
-    if ((cursor >= 0) && (cursor < 3))
-        menuShow = cursor; // Change the menu that is showing to the user
+    if ((cursor >= 0) && (cursor < 3)){
+        if (validation == 1) // Verification if the menuShow can be changed
+            menuShow = cursor; // Change the menu that is showing to the user
+    }
 
     printf("\033[2J\033[H"); // "clean" the terminal
 }
@@ -49,15 +51,16 @@ int main(void){
     while (cursor != 3){
         if (menuShow == 0){
             writePage("MARGINALIA", (sizeof(menuOptions) / sizeof(menuOptions[0])), 1, menuOptions, 0);
-            getInput();
+            getInput(1);
         }else if (menuShow == 1){
             writePage("I read...", 1, 0, 0, "The Book's names is");
-            getInput();
+            getInput(1);
         }else if (menuShow == 2){
             writePage("USERNAME", (sizeof(profileOptions) / sizeof(profileOptions[0])), 1, menuOptions, 0);
-            getInput();
+            getInput(0);
         }else{
             printf("!!! Invalid option !!!");
+            getInput(0);
           
         }
     }
