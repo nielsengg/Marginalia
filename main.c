@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
-char input[10];
+char input[160];
 int cursor;
 int menuShow = 0; 
+
 
 struct stru_option{
     char textShow[80];
@@ -18,6 +21,51 @@ void getInput(int validation){
         if (validation == 1) // Verification if the menuShow can be changed
             menuShow = cursor; // Change the menu that is showing to the user
     }
+
+    cursor = -1;// Stop the loop
+
+    printf("\033[2J\033[H"); // "clean" the terminal
+}
+
+int getBookName(){ // Search the book's name
+    fgets(input, sizeof input, stdin);
+    input[strlen(input)-1] = '\0'; 
+
+    FILE *bookData = fopen("data.txt", "r");
+    if(bookData == NULL ){
+        perror("Error 404");
+        return 1;
+    }
+
+    char line[180];
+    int lineNumber = 1;
+    while(fgets(line, sizeof line, bookData) != NULL){
+        char bookInputName[180];
+        char bookDataName[180];
+
+        sscanf(input, "%[^\n]", bookInputName); // bookInputName receives all words of the Input's line
+        sscanf(line, "%[^\n]", bookDataName); // bookDataName receives all words of the Data's line
+
+
+        // Transform the input's words to lowcase
+        for (int i = 0; bookInputName[i]; i++) {
+            bookInputName[i] = tolower(bookInputName[i]);
+        }
+
+        // Transform the data's words to lowcase
+        for (int i = 0; bookDataName[i]; i++) {
+            bookDataName[i] = tolower(bookDataName[i]);
+        }
+
+        if (strstr(bookDataName, bookInputName) != NULL){ // Search
+            printf("%d. %s", lineNumber, line);
+            lineNumber++;
+        }
+    }
+
+    fclose(bookData);
+
+    return 0;
 
     printf("\033[2J\033[H"); // "clean" the terminal
 }
@@ -53,13 +101,12 @@ int main(void){
             writePage("MARGINALIA", (sizeof(menuOptions) / sizeof(menuOptions[0])), 1, menuOptions, 0);
             getInput(1);
         }else if (menuShow == 1){
-            writePage("I read...", 1, 0, 0, "The Book's names is");
-            getInput(1);
+            writePage("I read...", 1, 0, 0, "Search for a book");
+            getBookName();
         }else if (menuShow == 2){
             writePage("USERNAME", (sizeof(profileOptions) / sizeof(profileOptions[0])), 1, menuOptions, 0);
-            getInput(0);
-        }else{
-            printf("!!! Invalid option !!!");
+            getInput(1);
+        }else{ // When the user write an unexpected number
             getInput(0);
           
         }
