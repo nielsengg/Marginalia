@@ -1,16 +1,17 @@
 #ifndef MARGINALIA_H
 #define MARGINALIA_H
 
-struct stru_option{
-    char textShow[160];
-    int position;
-};
+typedef struct {
+    char *options[10];
+    int amount;
+} stru_screen;
 
 void cleanTerminal();
-void getInput(int validation, int cursor, int *menuShow);
+void getInput(char *inputMessage, int validation, int *cursor, int *menuShow);
 int lowText (char vector[]);
-int showBookList(const char* dataName, char* inputName, char* line, struct stru_option vector[]);
-void writePage(const char *menuName, int optionsNumber, int isVector, struct stru_option vector[], const char *stringOption);
-int getBookName();
+void writePage(const char *menuName, int optionsNumber, stru_screen options);
+void showMenu(int *cursor, int *menuShow, stru_screen options);
+void showProfile(int *cursor, int *menuShow, stru_screen screen);
+
 
 #endif
