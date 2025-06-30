@@ -10,8 +10,10 @@ void cleanTerminal();
 void getInput(char *inputMessage, int validation, int *cursor, int *menuShow);
 int lowText (char vector[]);
 void writePage(const char *menuName, int optionsNumber, stru_screen options);
-void showMenu(int *cursor, int *menuShow, stru_screen options);
+void showMenu(int *cursor, int *menuShow, stru_screen screen);
 void showProfile(int *cursor, int *menuShow, stru_screen screen);
+void showLog(int *cursor, int *menuShow, stru_screen screen);
+int urlToSearch (char string[]);
 
 
 #endif

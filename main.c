@@ -10,6 +10,7 @@ int menuShow = 0; // Screen to show
 int main(void){
     // Definite the Options of the Menus
     stru_screen menuScreen = {{"Log +", "Profile", "Exit"}, 3};
+    stru_screen logScreen = {{""}, 0};
     stru_screen profileScreen = {{"Favorite Books", "Recent Activies", "Return to the Menu"}, 3};
 
     // Choose what to show in the terminal
@@ -17,7 +18,7 @@ int main(void){
         if (menuShow == 0){
             showMenu(&cursor, &menuShow, menuScreen);
         }else if (menuShow == 1){
-            
+            showLog(&cursor, &menuShow, logScreen);
         }else if (menuShow == 2){
             showProfile(&cursor, &menuShow, profileScreen);
         }else{ // When the user write an unexpected number
