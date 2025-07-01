@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <curl/curl.h>
+
 #include "marginalia.h"
 
 static char input[80];
@@ -9,6 +12,7 @@ static char input[80];
 void cleanTerminal(){
     printf("\033[2J\033[H");
 }
+   
 
 // Show a message and catch the local where the user want to go
 void getInput(char *inputMessage, int validation, int *cursor, int *menuShow){
@@ -50,7 +54,7 @@ int urlToSearch (char string[]){
     // Return the link to the initial string
     strcpy(string, temp);
 
-    printf("url string: %s\n", string);
+    string[strcspn(string, "\n")] = '\0';
 }
 
 
@@ -61,8 +65,91 @@ void writePage(const char *menuName, int optionsNumber, stru_screen screen){
         printf("%d. %s\n", i + 1, screen.options[i]);
 }
 
-void searchBoook(){
-    // Request book name;
+// Manage memory to getBook()
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp){
+  size_t realsize = size * nmemb;
+  struct MemoryStruct *mem = (struct MemoryStruct *)userp;
+ 
+  char *ptr = realloc(mem->memory, mem->size + realsize + 1);
+  if(!ptr) {
+    /* out of memory! */
+    printf("not enough memory (realloc returned NULL)\n");
+    return 0;
+  }
+ 
+  mem->memory = ptr;
+  memcpy(&(mem->memory[mem->size]), contents, realsize);
+  mem->size += realsize;
+  mem->memory[mem->size] = 0;
+ 
+  return realsize;
+}
+
+// Request book in the API
+void getBook(const char *url){
+    printf("URL: [%s]", url);
+
+    CURL *curl_handle;
+    CURLcode res;
+    
+    struct MemoryStruct chunk;
+    
+    chunk.memory = malloc(1);  /* grown as needed by the realloc above */
+    chunk.size = 0;    /* no data at this point */
+    
+    curl_global_init(CURL_GLOBAL_ALL);
+    
+    /* init the curl session */
+    curl_handle = curl_easy_init();
+    
+    /* specify URL to get */
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+    
+    /* send all data to this function  */
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    
+    /* we pass our 'chunk' struct to the callback function */
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
+    
+    /* some servers do not like requests that are made without a user-agent
+        field, so we provide one */
+    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, "cacert.pem");
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
+    
+    /* get it! */
+    res = curl_easy_perform(curl_handle);
+    
+    /* check for errors */
+    if(res != CURLE_OK) {
+        fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                curl_easy_strerror(res));
+    }
+    else {
+        /*
+        * Now, our chunk.memory points to a memory block that is chunk.size
+        * bytes big and contains the remote file.
+        *
+        * Do something nice with it!
+        */
+    
+        printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
+    }
+    
+    /* cleanup curl stuff */
+    curl_easy_cleanup(curl_handle);
+    
+    free(chunk.memory);
+    
+    /* we are done with libcurl, so clean it up */
+    curl_global_cleanup();
+}
+
+
+void searchBook(){
+    // Request Book's name;
     char input[80];
     printf("Search for book: ");
     fgets(input, sizeof input, stdin);
@@ -72,14 +159,11 @@ void searchBoook(){
     strcpy(lowInput, input);
     lowText(lowInput);
     
-    // Translate input to URL language
+    // Transform input to URL
     urlToSearch(lowInput);
-    
 
-    printf("Input: %s\nlowInput wit +: %s", input, lowInput);
-    // Mix URL with input
-
-    // request url to http
+    // Request URL
+    getBook(lowInput);
 
     // show list of serach
     
@@ -95,7 +179,7 @@ void showMenu(int *cursor, int *menuShow, stru_screen screen){
 
 void showLog(int *cursor, int *menuShow, stru_screen screen){
     writePage("I read...", screen.amount, screen);
-    searchBoook();
+    searchBook();
 }
 
 void showProfile(int *cursor, int *menuShow, stru_screen screen){

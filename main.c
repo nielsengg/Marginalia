@@ -2,13 +2,15 @@
 #include <string.h>
 #include <ctype.h>
 
+#include <curl/curl.h>
+
 #include "marginalia.h"
 
 int cursor; // Global Cursor to change the screens
 int menuShow = 0; // Screen to show
 
 int main(void){
-    // Definite the Options of the Menus
+    // Definite the Option1s of the Menus
     stru_screen menuScreen = {{"Log +", "Profile", "Exit"}, 3};
     stru_screen logScreen = {{""}, 0};
     stru_screen profileScreen = {{"Favorite Books", "Recent Activies", "Return to the Menu"}, 3};

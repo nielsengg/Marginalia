@@ -6,6 +6,11 @@ typedef struct {
     int amount;
 } stru_screen;
 
+struct MemoryStruct {
+  char *memory;
+  size_t size;
+};
+
 void cleanTerminal();
 void getInput(char *inputMessage, int validation, int *cursor, int *menuShow);
 int lowText (char vector[]);
@@ -14,6 +19,9 @@ void showMenu(int *cursor, int *menuShow, stru_screen screen);
 void showProfile(int *cursor, int *menuShow, stru_screen screen);
 void showLog(int *cursor, int *menuShow, stru_screen screen);
 int urlToSearch (char string[]);
+void getBook(const char *url);
+void searchBook();
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 
 #endif

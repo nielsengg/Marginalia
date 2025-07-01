@@ -1,3 +1,5 @@
 .vscode/
+curl/
 *.exe
 *.txt
+*.pem
