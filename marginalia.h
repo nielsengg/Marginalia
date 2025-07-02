@@ -6,6 +6,12 @@ typedef struct {
     int amount;
 } stru_screen;
 
+typedef struct {
+    char title[80], author[80];
+    char year[40];
+} bookInfo;
+
+
 struct MemoryStruct {
   char *memory;
   size_t size;
@@ -19,7 +25,7 @@ void showMenu(int *cursor, int *menuShow, stru_screen screen);
 void showProfile(int *cursor, int *menuShow, stru_screen screen);
 void showLog(int *cursor, int *menuShow, stru_screen screen);
 int urlToSearch (char string[]);
-void getBook(const char *url);
+void getBook(const char *url, bookInfo booksToShow[], int amountToShow);
 void searchBook();
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 

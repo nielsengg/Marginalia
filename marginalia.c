@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 
+#include "cJSON.h"
 #include "marginalia.h"
 
 static char input[80];
@@ -59,8 +60,8 @@ int urlToSearch (char string[]){
 
 
 // Write a page with options
-void writePage(const char *menuName, int optionsNumber, stru_screen screen){ 
-    printf("=== %s ===\n", menuName);
+void writePage(const char *menuTitle, int optionsNumber, stru_screen screen){ 
+    printf("=== %s ===\n", menuTitle);
     for (int i = 0; i < screen.amount; i++)
         printf("%d. %s\n", i + 1, screen.options[i]);
 }
@@ -86,70 +87,162 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 }
 
 // Request book in the API
-void getBook(const char *url){
-    printf("URL: [%s]", url);
+// void getBook(const char *url, bookInfo booksToShow[], int amountToShow){
+//     printf("URL: [%s]", url);
 
+//     CURL *curl_handle;
+//     CURLcode res;
+    
+//     struct MemoryStruct jsonBooks;
+    
+//     jsonBooks.memory = malloc(1);  /* grown as needed by the realloc above */
+//     jsonBooks.size = 0;
+
+//     curl_global_init(CURL_GLOBAL_ALL);
+    
+//     /* init the curl session */
+//     curl_handle = curl_easy_init();
+    
+//     /* specify URL to get */
+//     curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+    
+//     /* send all data to this function  */
+//     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+    
+//     /* we pass our 'jsonBooks' struct to the callback function */
+//     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&jsonBooks);
+    
+//     /* some servers do not like requests that are made without a user-agent
+//         field, so we provide one */
+//     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+
+//     curl_easy_setopt(curl_handle, CURLOPT_CAINFO, "cacert.pem");
+//     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
+//     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
+    
+//     /* get it! */
+//     res = curl_easy_perform(curl_handle);
+    
+//     /* check for errors */
+//     if(res != CURLE_OK) {
+//         fprintf(stderr, "curl_easy_perform() failed: %s\n",
+//                 curl_easy_strerror(res));
+//     }
+//     else {
+//         printf("%lu bytes retrieved\n", (unsigned long)jsonBooks.size);
+//     }
+    
+//     /* cleanup curl stuff */
+//     curl_easy_cleanup(curl_handle);
+    
+
+//     for (int i = 0; i < amountToShow; i++){
+//         // Get title
+//         char *title_start = strstr(jsonBooks.memory, "\"title\": \"");
+//         if (title_start) {
+//             title_start += 10; // Jump `"title": "`
+//             char *title_end = strchr(title_start, '"');
+//             if (title_end) {
+//                 int title_len = title_end - title_start;
+//                 strncpy(booksToShow[i].title, title_start, title_len);
+//                 booksToShow[i].title[title_len] = '\0';
+//             }
+//         }
+//     }
+    
+
+//     free(jsonBooks.memory);
+    
+//     /* we are done with libcurl, so clean it up */
+//     curl_global_cleanup();
+// }
+
+void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     CURL *curl_handle;
     CURLcode res;
     
-    struct MemoryStruct chunk;
-    
-    chunk.memory = malloc(1);  /* grown as needed by the realloc above */
-    chunk.size = 0;    /* no data at this point */
-    
-    curl_global_init(CURL_GLOBAL_ALL);
-    
-    /* init the curl session */
-    curl_handle = curl_easy_init();
-    
-    /* specify URL to get */
-    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-    
-    /* send all data to this function  */
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    
-    /* we pass our 'chunk' struct to the callback function */
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
-    
-    /* some servers do not like requests that are made without a user-agent
-        field, so we provide one */
-    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+    struct MemoryStruct jsonBooks; // Keep the API's answer
+    jsonBooks.memory = malloc(1); 
+    jsonBooks.size = 0;
 
+    curl_global_init(CURL_GLOBAL_ALL);
+    curl_handle = curl_easy_init();
+
+    // Configure do CURL
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url); // Which URL acess
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback); // Define how to it will be write
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&jsonBooks); // Where to write the request
+
+    //  Define the SSL certificate
     curl_easy_setopt(curl_handle, CURLOPT_CAINFO, "cacert.pem");
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
-    
-    /* get it! */
-    res = curl_easy_perform(curl_handle);
-    
-    /* check for errors */
-    if(res != CURLE_OK) {
-        fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                curl_easy_strerror(res));
+
+    // Request the HTTP
+    res = curl_easy_perform(curl_handle); // Request the HTTP
+    if (res != CURLE_OK) { // Error verification
+        fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        free(jsonBooks.memory);
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
+        return;
     }
-    else {
-        /*
-        * Now, our chunk.memory points to a memory block that is chunk.size
-        * bytes big and contains the remote file.
-        *
-        * Do something nice with it!
-        */
-    
-        printf("%lu bytes retrieved\n", (unsigned long)chunk.size);
+
+    // Parse the JSON (Extract)
+    cJSON *root = cJSON_Parse(jsonBooks.memory); // string JSON -> cJSON struct
+    if (!root) {
+        fprintf(stderr, "Failed to parse JSON. Data received: %.*s\n", (int)jsonBooks.size, jsonBooks.memory);
+        free(jsonBooks.memory);
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
+        return;
     }
-    
-    /* cleanup curl stuff */
+
+    // Get the HTTP Info
+    cJSON *docs = cJSON_GetObjectItemCaseSensitive(root, "docs");
+    if (!docs || !cJSON_IsArray(docs)) {
+        fprintf(stderr, "No 'docs' array found in JSON\n");
+        cJSON_Delete(root);
+        free(jsonBooks.memory);
+        curl_easy_cleanup(curl_handle);
+        curl_global_cleanup();
+        return;
+    }
+
+    // Extract specifics Infos
+    int num_books = cJSON_GetArraySize(docs);
+    if (num_books > amountToShow) {
+        num_books = amountToShow;
+    }
+
+    for (int i = 0; i < num_books; i++) {
+        cJSON *book = cJSON_GetArrayItem(docs, i);
+        cJSON *title = cJSON_GetObjectItemCaseSensitive(book, "title");
+        cJSON *author = cJSON_GetObjectItemCaseSensitive(book, "author_name");
+
+        if (title && cJSON_IsString(title)) {
+            strncpy(booksToShow[i].title, title->valuestring, sizeof(booksToShow[i].title) - 1);
+            booksToShow[i].title[sizeof(booksToShow[i].title) - 1] = '\0';
+        }
+
+        if (author && cJSON_IsArray(author)) {
+            cJSON *first_author = cJSON_GetArrayItem(author, 0);
+            if (first_author && cJSON_IsString(first_author)) {
+                strncpy(booksToShow[i].author, first_author->valuestring, sizeof(booksToShow[i].author) - 1);
+                booksToShow[i].author[sizeof(booksToShow[i].author) - 1] = '\0';
+            }
+        }
+    }
+
+    cJSON_Delete(root);
+    free(jsonBooks.memory);
     curl_easy_cleanup(curl_handle);
-    
-    free(chunk.memory);
-    
-    /* we are done with libcurl, so clean it up */
     curl_global_cleanup();
 }
 
 
 void searchBook(){
-    // Request Book's name;
+    // Request Book's title;
     char input[80];
     printf("Search for book: ");
     fgets(input, sizeof input, stdin);
@@ -163,9 +256,17 @@ void searchBook(){
     urlToSearch(lowInput);
 
     // Request URL
-    getBook(lowInput);
+    int amountToShow = 5;
+    bookInfo booksTitlesToShow[amountToShow];
+
+    getBook(lowInput, booksTitlesToShow, amountToShow);
 
     // show list of serach
+    for (int i = 0; i < amountToShow; i++){
+        printf("%d. %s, %s\n", i+1, booksTitlesToShow[i].title, booksTitlesToShow[i].author);
+    }
+    
+
     
 
 
