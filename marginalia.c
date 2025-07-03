@@ -14,7 +14,6 @@ void cleanTerminal(){
     printf("\033[2J\033[H");
 }
    
-
 // Show a message and catch the local where the user want to go
 void getInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     printf("%s: ", inputMessage);
@@ -49,7 +48,7 @@ int urlToSearch (char string[]){
     }
 
     // Put the input in the link
-    char temp[80] = "https://openlibrary.org/search.json?q=";
+    char temp[80] = "https://openlibrary.org/search.json?title=";
     strcat(temp, string);
 
     // Return the link to the initial string
@@ -86,77 +85,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
   return realsize;
 }
 
-// Request book in the API
-// void getBook(const char *url, bookInfo booksToShow[], int amountToShow){
-//     printf("URL: [%s]", url);
-
-//     CURL *curl_handle;
-//     CURLcode res;
-    
-//     struct MemoryStruct jsonBooks;
-    
-//     jsonBooks.memory = malloc(1);  /* grown as needed by the realloc above */
-//     jsonBooks.size = 0;
-
-//     curl_global_init(CURL_GLOBAL_ALL);
-    
-//     /* init the curl session */
-//     curl_handle = curl_easy_init();
-    
-//     /* specify URL to get */
-//     curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-    
-//     /* send all data to this function  */
-//     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-    
-//     /* we pass our 'jsonBooks' struct to the callback function */
-//     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&jsonBooks);
-    
-//     /* some servers do not like requests that are made without a user-agent
-//         field, so we provide one */
-//     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-
-//     curl_easy_setopt(curl_handle, CURLOPT_CAINFO, "cacert.pem");
-//     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
-//     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
-    
-//     /* get it! */
-//     res = curl_easy_perform(curl_handle);
-    
-//     /* check for errors */
-//     if(res != CURLE_OK) {
-//         fprintf(stderr, "curl_easy_perform() failed: %s\n",
-//                 curl_easy_strerror(res));
-//     }
-//     else {
-//         printf("%lu bytes retrieved\n", (unsigned long)jsonBooks.size);
-//     }
-    
-//     /* cleanup curl stuff */
-//     curl_easy_cleanup(curl_handle);
-    
-
-//     for (int i = 0; i < amountToShow; i++){
-//         // Get title
-//         char *title_start = strstr(jsonBooks.memory, "\"title\": \"");
-//         if (title_start) {
-//             title_start += 10; // Jump `"title": "`
-//             char *title_end = strchr(title_start, '"');
-//             if (title_end) {
-//                 int title_len = title_end - title_start;
-//                 strncpy(booksToShow[i].title, title_start, title_len);
-//                 booksToShow[i].title[title_len] = '\0';
-//             }
-//         }
-//     }
-    
-
-//     free(jsonBooks.memory);
-    
-//     /* we are done with libcurl, so clean it up */
-//     curl_global_cleanup();
-// }
-
+// Request book in the API.
 void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     CURL *curl_handle;
     CURLcode res;
@@ -219,20 +148,26 @@ void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
         cJSON *book = cJSON_GetArrayItem(docs, i);
         cJSON *title = cJSON_GetObjectItemCaseSensitive(book, "title");
         cJSON *author = cJSON_GetObjectItemCaseSensitive(book, "author_name");
+        cJSON *year = cJSON_GetObjectItemCaseSensitive(book, "first_publish_year");
 
         if (title && cJSON_IsString(title)) {
             strncpy(booksToShow[i].title, title->valuestring, sizeof(booksToShow[i].title) - 1);
             booksToShow[i].title[sizeof(booksToShow[i].title) - 1] = '\0';
         }
-
+    
         if (author && cJSON_IsArray(author)) {
             cJSON *first_author = cJSON_GetArrayItem(author, 0);
             if (first_author && cJSON_IsString(first_author)) {
                 strncpy(booksToShow[i].author, first_author->valuestring, sizeof(booksToShow[i].author) - 1);
                 booksToShow[i].author[sizeof(booksToShow[i].author) - 1] = '\0';
             }
+            }
+        
+        if (year && cJSON_IsNumber(year)) {
+            snprintf(booksToShow[i].year, sizeof(booksToShow[i].year), "%d", year->valueint);
         }
     }
+        
 
     cJSON_Delete(root);
     free(jsonBooks.memory);
@@ -240,7 +175,7 @@ void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     curl_global_cleanup();
 }
 
-
+// Call functions to the Book's Search in LOG +
 void searchBook(){
     // Request Book's title;
     char input[80];
@@ -261,15 +196,10 @@ void searchBook(){
 
     getBook(lowInput, booksTitlesToShow, amountToShow);
 
-    // show list of serach
+    // Show list of serach
     for (int i = 0; i < amountToShow; i++){
-        printf("%d. %s, %s\n", i+1, booksTitlesToShow[i].title, booksTitlesToShow[i].author);
+        printf("%d. %s (%s), %s\n", i+1, booksTitlesToShow[i].title, booksTitlesToShow[i].year, booksTitlesToShow[i].author);
     }
-    
-
-    
-
-
 }
 
 // SHOW SCREEENS
