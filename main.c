@@ -20,7 +20,7 @@ int main(void){
         if (menuShow == 0){
             showMenu(&cursor, &menuShow, menuScreen);
         }else if (menuShow == 1){
-            showLog(&cursor, &menuShow, logScreen);
+            showLog(&cursor, &menuShow);
         }else if (menuShow == 2){
             showProfile(&cursor, &menuShow, profileScreen);
         }else{ // When the user write an unexpected number

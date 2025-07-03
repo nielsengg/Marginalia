@@ -9,6 +9,9 @@
 
 static char input[80];
 
+// Functions prototype
+void logBook(int *cursor, int *menuShow);
+
 // Print white lines to "clean the terminal"
 void cleanTerminal(){
     printf("\033[2J\033[H");
@@ -18,17 +21,16 @@ void cleanTerminal(){
 void getInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     printf("%s: ", inputMessage);
     fgets(input, sizeof input, stdin);
-
     sscanf(input, "%ld", cursor);
-    printf("Cursor: %d\n*Cursor = %d", cursor, *cursor);
 
-    
-    if ((*cursor >= 0) && (*cursor < 3)){
+    // printf("Cursor: %d\n*Cursor = %d", cursor, *cursor);
+
+    if ((*cursor > 0) && (*cursor < 3)){
         if (validation == 1) // Verification if the menuShow can be changed
             *menuShow = *cursor; // Change the menu that is showing to the user
     }
 
-    *cursor = -1;// Stop the loop
+    *cursor = 0;// Stop the loop
 
     cleanTerminal(); // "clean" the terminal
 }
@@ -86,7 +88,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 }
 
 // Request book in the API.
-void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
+int getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     CURL *curl_handle;
     CURLcode res;
     
@@ -114,7 +116,7 @@ void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
         free(jsonBooks.memory);
         curl_easy_cleanup(curl_handle);
         curl_global_cleanup();
-        return;
+        return 1;
     }
 
     // Parse the JSON (Extract)
@@ -124,7 +126,7 @@ void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
         free(jsonBooks.memory);
         curl_easy_cleanup(curl_handle);
         curl_global_cleanup();
-        return;
+        return 1;
     }
 
     // Get the HTTP Info
@@ -135,7 +137,7 @@ void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
         free(jsonBooks.memory);
         curl_easy_cleanup(curl_handle);
         curl_global_cleanup();
-        return;
+        return 1;
     }
 
     // Extract specifics Infos
@@ -173,47 +175,101 @@ void getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     free(jsonBooks.memory);
     curl_easy_cleanup(curl_handle);
     curl_global_cleanup();
+
+    return 0;
 }
 
 // Call functions to the Book's Search in LOG +
-void searchBook(){
+void searchBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
     // Request Book's title;
     char input[80];
-    printf("Search for book: ");
+    printf("> Search for a book (-1 to Menu): ");
     fgets(input, sizeof input, stdin);
 
-    // Transform input in lowcase
-    char lowInput[80]; 
-    strcpy(lowInput, input);
-    lowText(lowInput);
+    int select = 0;
+    sscanf(input, "%d", &select);
+    if (select == -1){
+        *menuShow = 0; // Back to the MENU
+        cleanTerminal();
+    }else{
+        // Transform input in lowcase
+        char lowInput[80]; 
+        strcpy(lowInput, input);
+        lowText(lowInput);
+        
+        // Transform input to URL
+        urlToSearch(lowInput);
+
+        // Request URL
+        getBook(lowInput, bookList, amountList);
+        *validation = getBook(lowInput, bookList, amountList);
+
+        cleanTerminal();
+
+        // Show list of serach
+        printf("=== I read... ===\n");
+        for (int i = 0; i < amountList; i++){
+            printf("%d. %s (%s), %s\n", i+1, bookList[i].title, bookList[i].year, bookList[i].author);
+        }
+    }
     
-    // Transform input to URL
-    urlToSearch(lowInput);
+}
 
-    // Request URL
-    int amountToShow = 5;
-    bookInfo booksTitlesToShow[amountToShow];
+void chooseSearchedBook(bookInfo bookList[], int *cursor, int *menuShow){
+    if (*menuShow == 1){
+        char input[5];
+        printf("> Select a book: ");
+        fgets(input, sizeof input, stdin);
 
-    getBook(lowInput, booksTitlesToShow, amountToShow);
+        cleanTerminal();
 
-    // Show list of serach
-    for (int i = 0; i < amountToShow; i++){
-        printf("%d. %s (%s), %s\n", i+1, booksTitlesToShow[i].title, booksTitlesToShow[i].year, booksTitlesToShow[i].author);
+        int select;
+        sscanf(input, "%d", &select);
+
+
+        printf("=== %s (%s) ===\n", bookList[select].title, bookList[select].year);
+        printf("Do you want to LOG this book? (y/n): ");
+        fgets(input, sizeof input, stdin);
+
+        if (strcmp(input, "y\n") == 0){
+            printf("YYYYYYY");
+            // saveBook();
+        }
+        else if (strcmp(input, "n\n") == 0){
+            cleanTerminal();
+            showLog(cursor, menuShow);
+        }
+    }
+}
+
+void logBook(int *cursor, int *menuShow){
+    if (*menuShow == 1){
+        int amountToShow = 5;
+        bookInfo booksTitlesToShow[amountToShow];
+
+        // Verify if the search was correct;
+        int searchOk = 0; // 0 -> OK \\ 1 -> Wrong 
+        searchBook(&searchOk, booksTitlesToShow, amountToShow, cursor, menuShow);
+
+        if (searchOk == 0)
+            chooseSearchedBook(booksTitlesToShow, cursor, menuShow);
     }
 }
 
 // SHOW SCREEENS
 void showMenu(int *cursor, int *menuShow, stru_screen screen){
     writePage("MARGINALIA", screen.amount, screen);
-    getInput("Choose an option", 1, cursor, menuShow);
+    getInput("> Choose an option", 1, cursor, menuShow);
 }
 
-void showLog(int *cursor, int *menuShow, stru_screen screen){
-    writePage("I read...", screen.amount, screen);
-    searchBook();
+void showLog(int *cursor, int *menuShow){
+    if (*menuShow == 1){
+        printf("=== I read... ===\n");
+        logBook(cursor, menuShow); 
+    }
 }
 
 void showProfile(int *cursor, int *menuShow, stru_screen screen){
     writePage("USERNAME", screen.amount, screen);
-    getInput("Choose an option", 1, cursor, menuShow);
+    getInput("> Choose an option", 1, cursor, menuShow);
 }
