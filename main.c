@@ -7,7 +7,7 @@
 #include "marginalia.h"
 
 int cursor; // Global Cursor to change the screens
-int menuShow = 0; // Screen to show
+int menuShow = 1; // Screen to show
 
 int main(void){
     // Definite the Option1s of the Menus

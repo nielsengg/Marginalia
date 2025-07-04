@@ -2,6 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <curl/curl.h>
 
 #include "cJSON.h"
@@ -189,9 +190,12 @@ void searchBook(int *validation, bookInfo bookList[], int amountList, int *curso
     int select = 0;
     sscanf(input, "%d", &select);
     if (select == -1){
-        *menuShow = 0; // Back to the MENU
+        *menuShow = 0; // Back to MENU
         cleanTerminal();
     }else{
+        cleanTerminal();
+        printf ("=== Searching... ===\n");
+
         // Transform input in lowcase
         char lowInput[80]; 
         strcpy(lowInput, input);
@@ -211,11 +215,44 @@ void searchBook(int *validation, bookInfo bookList[], int amountList, int *curso
         for (int i = 0; i < amountList; i++){
             printf("%d. %s (%s), %s\n", i+1, bookList[i].title, bookList[i].year, bookList[i].author);
         }
+        printf("6. Search for another book\n");
+        printf("7. Return to menu\n\n");
     }
     
 }
 
-void chooseSearchedBook(bookInfo bookList[], int *cursor, int *menuShow){
+void showDataBook(){
+    cleanTerminal();
+    printf("=== Recent Activity ===\n");
+
+    FILE *dataArchive = fopen("data.dat", "r");
+
+    if (dataArchive == NULL)
+        perror("Failed to load the data\n");
+
+    bookInfo bookShow;
+    while (fread(&bookShow, sizeof bookShow, 1, dataArchive) > 0) {
+        // printf("name: %s\n year: %s", bookShow.title, bookShow.year);
+        printf("> %s (%s), %s\n", bookShow.title, bookShow.year, bookShow.author);
+    }
+
+    fclose(dataArchive);
+}
+
+void saveBook(bookInfo *bookLog){
+    FILE *dataArchive = fopen("data.dat", "ab");
+    // FILE *dataArchive = fopen("data.dat", "w");
+
+    fwrite(bookLog, sizeof *bookLog, 1, dataArchive);
+
+    // Move file pointer to the beginning before reading
+    rewind(dataArchive);
+
+    showDataBook();
+}
+
+
+void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
     if (*menuShow == 1){
         char input[5];
         printf("> Select a book: ");
@@ -224,20 +261,41 @@ void chooseSearchedBook(bookInfo bookList[], int *cursor, int *menuShow){
         cleanTerminal();
 
         int select;
+        bool choseList;
         sscanf(input, "%d", &select);
 
+        //Verify if the user chose a book instead to research or return menu
+        if (select != 6 && select != 7)
+            choseList = true;
 
-        printf("=== %s (%s) ===\n", bookList[select].title, bookList[select].year);
-        printf("Do you want to LOG this book? (y/n): ");
-        fgets(input, sizeof input, stdin);
 
-        if (strcmp(input, "y\n") == 0){
-            printf("YYYYYYY");
-            // saveBook();
-        }
-        else if (strcmp(input, "n\n") == 0){
+        if (choseList){
+            printf("=== %s (%s) ===\n", bookList[select - 1].title, bookList[select - 1].year);
+            printf("Do you want to LOG this book? (y/n): ");
+            fgets(input, sizeof input, stdin);
+
+            bookInfo choseBook;
+            choseBook = bookList[select - 1];
+            if (strcmp(input, "y\n") == 0){
+                saveBook(&choseBook);
+            }
+            else if (strcmp(input, "n\n") == 0){
+                cleanTerminal();
+                showLog(cursor, menuShow);
+            }
+        }else{
             cleanTerminal();
-            showLog(cursor, menuShow);
+
+            // Research option
+            if (select == 6){ 
+                printf("=== I read... ===\n");
+                searchBook(validation, bookList, amountList, cursor, menuShow);
+            }
+
+            // Return menu
+            if (select == 7){ 
+                *menuShow = 0;
+            }
         }
     }
 }
@@ -252,7 +310,7 @@ void logBook(int *cursor, int *menuShow){
         searchBook(&searchOk, booksTitlesToShow, amountToShow, cursor, menuShow);
 
         if (searchOk == 0)
-            chooseSearchedBook(booksTitlesToShow, cursor, menuShow);
+            chooseSearchedBook(&searchOk, booksTitlesToShow, amountToShow, cursor, menuShow);
     }
 }
 
