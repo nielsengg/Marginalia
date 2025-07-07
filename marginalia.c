@@ -21,6 +21,7 @@ void cleanTerminal(){
    
 // Show a message and catch the local where the user want to go
 void getInput(char *inputMessage, int validation, int *cursor, int *menuShow){
+    printf("\n");
     printf("%s: ", inputMessage);
     fgets(input, sizeof input, stdin);
     sscanf(input, "%ld", cursor);
@@ -181,7 +182,7 @@ int getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     return 0;
 }
 
-//
+// Show animate message "Searching..."
 void searchingMessage(bool *searching){
     const char *base = "Searching";
     char message[32];
@@ -191,8 +192,11 @@ void searchingMessage(bool *searching){
     for (int i = 0; i < 4; i++) {
         snprintf(message, sizeof(message), "%s%.*s", base, dots, "...");
         printf("=== %s ===\r", message);
+
+        // Wait a second to chnage the string
         fflush(stdout);
-        sleep(1);
+        sleep(1); 
+
         dots++;
     }
     printf("\n");
@@ -203,7 +207,7 @@ void searchingMessage(bool *searching){
 void searchBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
     // Request Book's title;
     char input[80];
-    printf("> Search for a book (-1 to Menu): ");
+    printf("> Search for a book: ");
     fgets(input, sizeof input, stdin);
 
     int select = 0;
@@ -286,7 +290,7 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
         sscanf(input, "%d", &select);
 
         //Verify if the user chose a book instead to research or return menu
-        if (select != 6 && select != 7)
+        if (select > 0 && select < 6)
             choseList = true;
 
 
@@ -307,15 +311,21 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
         }else{
             cleanTerminal();
 
-            // Research option
-            if (select == 6){ 
+            
+            switch (select){
+            case 6: // Research option
                 printf("=== I read... ===\n");
                 searchBook(validation, bookList, amountList, cursor, menuShow);
-            }
+                break;
 
-            // Return menu
-            if (select == 7){ 
+            case 7: // Return menu
                 *menuShow = 0;
+
+            default:
+                printf("!!! Invalid chosen option !!!\n");
+                fflush(stdout);
+                sleep(1); 
+                cleanTerminal();
             }
         }
     }
