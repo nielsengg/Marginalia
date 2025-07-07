@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <curl/curl.h>
+#include <unistd.h>
 
 #include "cJSON.h"
 #include "marginalia.h"
@@ -51,7 +52,7 @@ int urlToSearch (char string[]){
     }
 
     // Put the input in the link
-    char temp[80] = "https://openlibrary.org/search.json?title=";
+    char temp[160] = "https://openlibrary.org/search.json?title=";
     strcat(temp, string);
 
     // Return the link to the initial string
@@ -180,6 +181,24 @@ int getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
     return 0;
 }
 
+//
+void searchingMessage(bool *searching){
+    const char *base = "Searching";
+    char message[32];
+    int dots = 0;
+
+    cleanTerminal();
+    for (int i = 0; i < 4; i++) {
+        snprintf(message, sizeof(message), "%s%.*s", base, dots, "...");
+        printf("=== %s ===\r", message);
+        fflush(stdout);
+        sleep(1);
+        dots++;
+    }
+    printf("\n");
+}
+
+
 // Call functions to the Book's Search in LOG +
 void searchBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
     // Request Book's title;
@@ -189,28 +208,30 @@ void searchBook(int *validation, bookInfo bookList[], int amountList, int *curso
 
     int select = 0;
     sscanf(input, "%d", &select);
+    cleanTerminal();
+
     if (select == -1){
         *menuShow = 0; // Back to MENU
-        cleanTerminal();
-    }else{
-        cleanTerminal();
-        printf ("=== Searching... ===\n");
-
+    }else{      
+        bool searching = true;
+        
         // Transform input in lowcase
-        char lowInput[80]; 
+        char lowInput[160]; 
         strcpy(lowInput, input);
         lowText(lowInput);
         
         // Transform input to URL
         urlToSearch(lowInput);
 
+        // Show searching message once
+        searchingMessage(&searching);
+
         // Request URL
-        getBook(lowInput, bookList, amountList);
         *validation = getBook(lowInput, bookList, amountList);
 
         cleanTerminal();
 
-        // Show list of serach
+        // Show list of search
         printf("=== I read... ===\n");
         for (int i = 0; i < amountList; i++){
             printf("%d. %s (%s), %s\n", i+1, bookList[i].title, bookList[i].year, bookList[i].author);

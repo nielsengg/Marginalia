@@ -7,7 +7,7 @@ typedef struct {
 } stru_screen;
 
 typedef struct {
-    char title[80], author[80];
+    char title[160], author[80];
     char year[40];
 } bookInfo;
 
@@ -32,6 +32,7 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
 void logBook(int *cursor, int *menuShow);
 void saveBook(bookInfo *bookLog);
 void showDataBook();
+void searchingMessage(bool *searching);
 
 
 #endif
