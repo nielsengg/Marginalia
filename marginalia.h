@@ -1,12 +1,15 @@
 #ifndef MARGINALIA_H
 #define MARGINALIA_H
 
+#include <stdbool.h>
+
 typedef struct {
     char *options[10];
     int amount;
 } stru_screen;
 
 typedef struct {
+    int id;
     char title[160], author[80];
     char year[40];
 } bookInfo;
@@ -31,8 +34,9 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
 void logBook(int *cursor, int *menuShow);
 void saveBook(bookInfo *bookLog);
-void showDataBook();
+void showDataBook(int *menuShow);
 void searchingMessage(bool *searching);
+int amountBooksSaved();
 
 
 #endif

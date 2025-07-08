@@ -18,9 +18,16 @@ void logBook(int *cursor, int *menuShow);
 void cleanTerminal(){
     printf("\033[2J\033[H");
 }
+
+void invalidOption(){
+    printf("!!! Invalid chosen option !!!\n");
+    fflush(stdout);
+    sleep(1);
+    cleanTerminal();
+}
    
 // Show a message and catch the local where the user want to go
-void getInput(char *inputMessage, int validation, int *cursor, int *menuShow){
+void menuInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     printf("\n");
     printf("%s: ", inputMessage);
     fgets(input, sizeof input, stdin);
@@ -31,6 +38,34 @@ void getInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     if ((*cursor > 0) && (*cursor < 3)){
         if (validation == 1) // Verification if the menuShow can be changed
             *menuShow = *cursor; // Change the menu that is showing to the user
+    }
+
+    *cursor = 0;// Stop the loop
+
+    cleanTerminal(); // "clean" the terminal
+}
+
+void profileInput(char *inputMessage, int validation, int *cursor, int *menuShow){
+    printf("\n");
+    printf("Choose a option: ");
+
+    int select;
+    fgets(input, sizeof input, stdin);
+    sscanf(input, "%ld", &select);
+
+    cleanTerminal();
+    switch (select){
+    case 1:
+        /* code */
+        break;
+    case 2:
+        showDataBook(menuShow);
+        break;
+    case 3:
+        *menuShow = 0; // Return Menu
+        break;
+    default:
+        invalidOption();
     }
 
     *cursor = 0;// Stop the loop
@@ -241,41 +276,88 @@ void searchBook(int *validation, bookInfo bookList[], int amountList, int *curso
             printf("%d. %s (%s), %s\n", i+1, bookList[i].title, bookList[i].year, bookList[i].author);
         }
         printf("6. Search for another book\n");
-        printf("7. Return to menu\n\n");
+        printf("7. Return Menu\n\n");
     }
     
 }
 
-void showDataBook(){
-    cleanTerminal();
-    printf("=== Recent Activity ===\n");
+void showDataBook(int *menuShow){
+    char input[5];
+    int select = -1;
+
+    int SMIndice = 6; // Show More default option indice
+    int RMIndice = 7; // Return Menu default option indice
 
     FILE *dataArchive = fopen("data.dat", "r");
-
     if (dataArchive == NULL)
         perror("Failed to load the data\n");
 
-    bookInfo bookShow;
-    while (fread(&bookShow, sizeof bookShow, 1, dataArchive) > 0) {
-        // printf("name: %s\n year: %s", bookShow.title, bookShow.year);
-        printf("> %s (%s), %s\n", bookShow.title, bookShow.year, bookShow.author);
-    }
+    do{
+        cleanTerminal();
+        printf("=== Recent Activity ===\n");
+
+        // Show saved books
+        bookInfo bookShow;
+        while (fread(&bookShow, sizeof bookShow, 1, dataArchive) > 0) {
+            // printf("name: %s\n year: %s", bookShow.title, bookShow.year);
+            printf("%d. %s (%s), %s\n", bookShow.id, bookShow.title, bookShow.year, bookShow.author);
+        }
+
+        // Decide where to put the control options 
+        if (amountBooksSaved() < 6){ // If the amount of saved books suprases the number to show
+            SMIndice = amountBooksSaved() + 1;
+            RMIndice = amountBooksSaved() + 2;
+        }
+        
+        printf("%d. Show more\n", SMIndice);
+        printf("%d. Return Menu\n\n", RMIndice);
+
+        // User input
+        printf("> Choose an options: ");
+        fgets(input, sizeof input, stdin);
+        sscanf(input, "%d", &select);
+        
+        if (select == SMIndice)
+            printf("oi");
+        else if (select == RMIndice){
+            *menuShow = 2;
+        } else{
+            cleanTerminal();
+            invalidOption();
+            rewind(dataArchive);
+        }
+
+    } while (select != RMIndice);
 
     fclose(dataArchive);
 }
 
 void saveBook(bookInfo *bookLog){
     FILE *dataArchive = fopen("data.dat", "ab");
-    // FILE *dataArchive = fopen("data.dat", "w");
+    if (dataArchive == NULL) {
+        perror("Error to open the data");
+    }
 
     fwrite(bookLog, sizeof *bookLog, 1, dataArchive);
 
-    // Move file pointer to the beginning before reading
-    rewind(dataArchive);
-
-    showDataBook();
+    fclose(dataArchive);
 }
 
+int amountBooksSaved(){
+    FILE *dataArchive = fopen("data.dat", "rb");
+    if (dataArchive == NULL) {
+        perror("Error to open the data");
+    }
+
+    fseek(dataArchive, 0, SEEK_END);
+    int size = ftell(dataArchive);
+
+    fclose(dataArchive);
+
+    bookInfo bookStruct;
+
+    return (size / sizeof bookStruct);
+}
 
 void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
     if (*menuShow == 1){
@@ -296,11 +378,14 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
 
         if (choseList){
             printf("=== %s (%s) ===\n", bookList[select - 1].title, bookList[select - 1].year);
-            printf("Do you want to LOG this book? (y/n): ");
+            printf("Do you want to Log this book? (y/n): ");
             fgets(input, sizeof input, stdin);
 
             bookInfo choseBook;
             choseBook = bookList[select - 1];
+
+            choseBook.id = amountBooksSaved() + 1;
+
             if (strcmp(input, "y\n") == 0){
                 saveBook(&choseBook);
             }
@@ -310,22 +395,17 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
             }
         }else{
             cleanTerminal();
-
-            
             switch (select){
-            case 6: // Research option
-                printf("=== I read... ===\n");
-                searchBook(validation, bookList, amountList, cursor, menuShow);
-                break;
+                case 6: // Research option
+                    printf("=== I read... ===\n");
+                    searchBook(validation, bookList, amountList, cursor, menuShow);
+                    break;
 
-            case 7: // Return menu
-                *menuShow = 0;
-
-            default:
-                printf("!!! Invalid chosen option !!!\n");
-                fflush(stdout);
-                sleep(1); 
-                cleanTerminal();
+                case 7: // Return menu
+                    *menuShow = 0;
+                    break;
+                default:
+                    invalidOption();
             }
         }
     }
@@ -348,7 +428,7 @@ void logBook(int *cursor, int *menuShow){
 // SHOW SCREEENS
 void showMenu(int *cursor, int *menuShow, stru_screen screen){
     writePage("MARGINALIA", screen.amount, screen);
-    getInput("> Choose an option", 1, cursor, menuShow);
+    menuInput("> Choose an option", 1, cursor, menuShow);
 }
 
 void showLog(int *cursor, int *menuShow){
@@ -359,6 +439,8 @@ void showLog(int *cursor, int *menuShow){
 }
 
 void showProfile(int *cursor, int *menuShow, stru_screen screen){
-    writePage("USERNAME", screen.amount, screen);
-    getInput("> Choose an option", 1, cursor, menuShow);
+    if (*menuShow == 2){
+        writePage("USERNAME", screen.amount, screen);
+        profileInput("> Choose an option", 1, cursor, menuShow);
+    }
 }

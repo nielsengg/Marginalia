@@ -7,13 +7,14 @@
 #include "marginalia.h"
 
 int cursor; // Global Cursor to change the screens
-int menuShow = 1; // Screen to show
+int menuShow = 0; // Screen to show
 
 int main(void){
+    cleanTerminal();
     // Definite the Option1s of the Menus
     stru_screen menuScreen = {{"Log +", "Profile", "Exit"}, 3};
     stru_screen logScreen = {{""}, 0};
-    stru_screen profileScreen = {{"Favorite Books", "Recent Activies", "Return to the Menu"}, 3};
+    stru_screen profileScreen = {{"Favorite Books", "Recent Activies", "Return Menu"}, 3};
 
     // Choose what to show in the terminal
     while (menuShow != 3){
