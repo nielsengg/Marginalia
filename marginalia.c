@@ -288,48 +288,75 @@ void showDataBook(int *menuShow){
     int SMIndice = 6; // Show More default option indice
     int RMIndice = 7; // Return Menu default option indice
 
+    // Save saved books in a vector
     FILE *dataArchive = fopen("data.dat", "r");
     if (dataArchive == NULL)
         perror("Failed to load the data\n");
+
+    // Show saved books
+    int page = 0;
+    bookInfo recentActivities[100];
+    bookInfo bookShow;
+    int activitieID = 0;
+    while (fread(&bookShow, sizeof bookShow, 1, dataArchive) > 0) {
+        recentActivities[activitieID] = bookShow;
+        activitieID++;
+    }
+
+    fclose(dataArchive);
 
     do{
         cleanTerminal();
         printf("=== Recent Activity ===\n");
 
-        // Show saved books
-        bookInfo bookShow;
-        while (fread(&bookShow, sizeof bookShow, 1, dataArchive) > 0) {
-            // printf("name: %s\n year: %s", bookShow.title, bookShow.year);
-            printf("%d. %s (%s), %s\n", bookShow.id, bookShow.title, bookShow.year, bookShow.author);
-        }
-
-        // Decide where to put the control options 
-        if (amountBooksSaved() < 6){ // If the amount of saved books suprases the number to show
-            SMIndice = amountBooksSaved() + 1;
-            RMIndice = amountBooksSaved() + 2;
-        }
+        // Define how much saved books will be showed
+        int maxBookShow = 5; 
+        int amountBooksToShow = maxBookShow;
         
-        printf("%d. Show more\n", SMIndice);
-        printf("%d. Return Menu\n\n", RMIndice);
+        // Calcule how much saved books will be showed
+        if (page > 0)
+            amountBooksToShow = (maxBookShow % (page * maxBookShow)) + 1;
+        
+        //Show saved books
+        for (int i = 0; i < amountBooksToShow; i++){
+            printf("%d. %s (%s), %s\n", recentActivities[i + (page * maxBookShow)].id, recentActivities[i + (page * maxBookShow)].title, recentActivities[i + (page * maxBookShow)].year, recentActivities[i + (page * maxBookShow)].author);
+        }
+    
+        // Define the commands numbers
+        int lastID = recentActivities[amountBooksToShow].id + (page * maxBookShow);
+        if ((amountBooksSaved() + 1) > lastID){ // Verify if have more saved books to show
+            // Decide where to put the control options 
+            SMIndice = recentActivities[amountBooksToShow].id + (page * maxBookShow);
+            RMIndice = recentActivities[amountBooksToShow].id + (page * maxBookShow) + 1;
 
-        // User input
+            printf("%d. Show more\n", SMIndice);
+            printf("%d. Return Profile\n\n", RMIndice);
+        } else {
+            RMIndice = recentActivities[amountBooksToShow].id + (page * maxBookShow);
+            printf("%d. Return Profile\n\n", RMIndice);
+        }
+
+        // Catch the user's input
         printf("> Choose an options: ");
         fgets(input, sizeof input, stdin);
         sscanf(input, "%d", &select);
         
-        if (select == SMIndice)
-            printf("oi");
-        else if (select == RMIndice){
+        // Show more
+        if ((select == SMIndice) && ((amountBooksSaved() + 1)  > lastID)){
+            page++;
+        
+        // Return Profile
+        }else if (select == RMIndice){
             *menuShow = 2;
-        } else{
+        } else{ // If the user iserted a invalid option
             cleanTerminal();
             invalidOption();
             rewind(dataArchive);
         }
 
-    } while (select != RMIndice);
+    } while (select != RMIndice); // While the user do not selected the Return Menu option
 
-    fclose(dataArchive);
+    
 }
 
 void saveBook(bookInfo *bookLog){
@@ -388,6 +415,8 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
 
             if (strcmp(input, "y\n") == 0){
                 saveBook(&choseBook);
+                cleanTerminal();
+                *menuShow = 0;
             }
             else if (strcmp(input, "n\n") == 0){
                 cleanTerminal();
