@@ -14,7 +14,7 @@ int main(void){
     // Definite the Option1s of the Menus
     stru_screen menuScreen = {{"Log +", "Profile", "Exit"}, 3};
     stru_screen logScreen = {{""}, 0};
-    stru_screen profileScreen = {{"Favorite Books", "Recent Activies", "Return Menu"}, 3};
+    stru_screen profileScreen = {{"Favorite books", "Recent activity", "Return menu"}, 3};
 
     // Choose what to show in the terminal
     while (menuShow != 3){

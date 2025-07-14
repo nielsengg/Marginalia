@@ -12,6 +12,8 @@ typedef struct {
     int id;
     char title[160], author[80];
     char year[40];
+    int regDay, regMon, regYear; // The data that the user saved the book
+
 } bookInfo;
 
 

@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <curl/curl.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "cJSON.h"
 #include "marginalia.h"
@@ -295,19 +296,19 @@ void showDataBook(int *menuShow){
 
     // Show saved books
     int page = 0;
-    bookInfo recentActivities[100];
+    bookInfo recentActivity[100];
     bookInfo bookShow;
-    int activitieID = 0;
+    int activityID = 0;
     while (fread(&bookShow, sizeof bookShow, 1, dataArchive) > 0) {
-        recentActivities[activitieID] = bookShow;
-        activitieID++;
+        recentActivity[activityID] = bookShow;
+        activityID++;
     }
 
     fclose(dataArchive);
 
     do{
         cleanTerminal();
-        printf("=== Recent Activity ===\n");
+        printf("=== Recent activity ===\n");
 
         // Define how much saved books will be showed
         int maxBookShow = 5; 
@@ -318,21 +319,29 @@ void showDataBook(int *menuShow){
             amountBooksToShow = (maxBookShow % (page * maxBookShow)) + 1;
         
         //Show saved books
-        for (int i = 0; i < amountBooksToShow; i++){
-            printf("%d. %s (%s), %s\n", recentActivities[i + (page * maxBookShow)].id, recentActivities[i + (page * maxBookShow)].title, recentActivities[i + (page * maxBookShow)].year, recentActivities[i + (page * maxBookShow)].author);
+        if ((amountBooksSaved() + 1) >= maxBookShow){
+            for (int i = 0; i < amountBooksToShow; i++){
+                int indice = i + (page * maxBookShow); // Calcule which book to show in function of the page
+                printf("%d. %s (%s), %s | Read on %d-%d-%d\n", recentActivity[indice].id, recentActivity[indice].title, recentActivity[indice].year, recentActivity[indice].author, recentActivity[indice].regYear, recentActivity[indice].regMon, recentActivity[indice].regDay);
+            }
+        }else{
+           for (int i = 0; i < amountBooksSaved(); i++){
+                int indice = i + (page * maxBookShow); // Calcule which book to show in function of the page
+                printf("%d. %s (%s), %s | Read on %d-%d-%d\n", recentActivity[indice].id, recentActivity[indice].title, recentActivity[indice].year, recentActivity[indice].author, recentActivity[indice].regYear, recentActivity[indice].regMon, recentActivity[indice].regDay);
+            }
         }
     
         // Define the commands numbers
-        int lastID = recentActivities[amountBooksToShow].id + (page * maxBookShow);
+        int lastID = recentActivity[amountBooksToShow].id + (page * maxBookShow);
         if ((amountBooksSaved() + 1) > lastID){ // Verify if have more saved books to show
             // Decide where to put the control options 
-            SMIndice = recentActivities[amountBooksToShow].id + (page * maxBookShow);
-            RMIndice = recentActivities[amountBooksToShow].id + (page * maxBookShow) + 1;
+            SMIndice = recentActivity[amountBooksToShow].id + (page * maxBookShow);
+            RMIndice = recentActivity[amountBooksToShow].id + (page * maxBookShow) + 1;
 
             printf("%d. Show more\n", SMIndice);
             printf("%d. Return Profile\n\n", RMIndice);
         } else {
-            RMIndice = recentActivities[amountBooksToShow].id + (page * maxBookShow);
+            RMIndice = recentActivity[amountBooksToShow].id + (page * maxBookShow);
             printf("%d. Return Profile\n\n", RMIndice);
         }
 
@@ -412,6 +421,12 @@ void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, in
             choseBook = bookList[select - 1];
 
             choseBook.id = amountBooksSaved() + 1;
+
+            time_t atualTime = time(NULL);
+            struct tm *infoTime= localtime(&atualTime);
+            choseBook.regDay = infoTime->tm_mday;
+            choseBook.regMon = infoTime->tm_mon + 1;
+            choseBook.regYear = infoTime->tm_year + 1900;
 
             if (strcmp(input, "y\n") == 0){
                 saveBook(&choseBook);
