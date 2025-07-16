@@ -36,7 +36,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
 void logBook(int *cursor, int *menuShow);
 void saveBook(bookInfo *bookLog);
-void showDataBook(int *menuShow);
+void showRecentActivity(int *menuShow);
 void searchingMessage(bool *searching);
 int amountBooksSaved();
 
