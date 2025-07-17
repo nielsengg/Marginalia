@@ -350,13 +350,17 @@ void showRecentActivity(int *menuShow){
             printf("=== Recent activity ===\n");
 
             // Define how much saved books will be showed
-            int maxBookShow = 2; 
+            int maxBookShow = 4; 
             int amountBooksToShow = maxBookShow;
             
             // Calcule how much saved books will be showed in the last page
             
-            if (page == (amountBooksSaved() / maxBookShow) && page > 0) // if is the last page
-                amountBooksToShow = (amountBooksSaved() % (page * maxBookShow));
+            if ((page == (amountBooksSaved() / maxBookShow)) || (amountBooksSaved() < maxBookShow)){ // if is the last page
+                if (page > 0)
+                    amountBooksToShow = (amountBooksSaved() % (page * maxBookShow));
+                else
+                    amountBooksToShow = amountBooksSaved();
+            }
             
             //Show saved books
             if ((amountBooksSaved() + 1) >= maxBookShow){
@@ -419,7 +423,7 @@ void showRecentActivity(int *menuShow){
                     rewind(dataArchive);
                 }
             } else {
-                if (delete == 1){
+                if (delete == 1){ // Delete one book
                     FILE *dataArchive = fopen("data.dat", "r");
                     if (dataArchive == NULL)
                         perror("Failed to open the data\n");
@@ -454,6 +458,8 @@ void showRecentActivity(int *menuShow){
                         perror("Failed to delete the data\n");
                     
                     fclose(dataArchive);
+
+                    *menuShow = 0;
                 }
 
                 editMode = false;
