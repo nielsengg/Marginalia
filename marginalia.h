@@ -14,7 +14,7 @@ typedef struct {
     char year[40];
     int regDay, regMon, regYear; // The data that the user saved the book
 
-} bookInfo;
+} infoBook;
 
 
 struct MemoryStruct {
@@ -30,15 +30,16 @@ void showMenu(int *cursor, int *menuShow, stru_screen screen);
 void showProfile(int *cursor, int *menuShow, stru_screen screen);
 void showLog(int *cursor, int *menuShow);
 int urlToSearch (char string[]);
-int getBook(const char *url, bookInfo booksToShow[], int amountToShow);
-void searchBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
+int getBook(const char *url, infoBook booksToShow[], int amountToShow);
+void searchBook(int *validation, infoBook bookList[], int amountList, int *cursor, int *menuShow);
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
-void selectSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
+void selectSearchedBook(int *validation, infoBook bookList[], int amountList, int *cursor, int *menuShow);
 void logBook(int *cursor, int *menuShow);
-void saveBook(bookInfo *bookLog);
-void showRecentActivity(int *menuShow);
+void saveBook(infoBook *bookLog);
+void showRecentActivity(int *profileOption);
 void searchingMessage(bool *searching);
 int amountBooksSaved();
-
+bool bookAlreadyFavorited(infoBook *addBook);
+void showFavoriteBooks();
 
 #endif

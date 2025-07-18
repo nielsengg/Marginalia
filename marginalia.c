@@ -22,6 +22,7 @@ void cleanTerminal(){
 
 // Show Invalid Message
 void invalidOption(){
+    cleanTerminal();
     printf("!!! Invalid chosen option !!!\n");
     fflush(stdout);
     sleep(1);
@@ -45,27 +46,42 @@ void menuInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     cleanTerminal(); // "clean" the terminal
 }
 
+void showFavoriteBooks(){
+    FILE *favoriteArchive = fopen("favorite.dat", "a");
+    if (favoriteArchive == NULL)
+        perror("Failed to open the data\n");
+    
+    infoBook favBook;
+    while (fread(&favBook, sizeof favBook, 1, favoriteArchive) > 0){
+        printf("> %s (%s), %s | Read on %d-%d-%d\n", favBook.title, favBook.year, favBook.author, favBook.regYear, favBook.regMon, favBook.regDay);
+    }
+
+    fclose(favoriteArchive);
+};
+
 void profileInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     printf("\n");
     printf("%s: ", inputMessage);
 
-    int select;
+    int profileOption = -1;
     fgets(input, sizeof input, stdin);
-    sscanf(input, "%ld", &select);
+    sscanf(input, "%ld", &profileOption);
 
     cleanTerminal();
-    switch (select){
-    case 1:
-        /* code */
-        break;
-    case 2:
-        showRecentActivity(menuShow);
-        break;
-    case 3:
-        *menuShow = 0; // Return Menu
-        break;
-    default:
-        invalidOption();
+    switch (profileOption){
+        case 0:
+            profileInput(inputMessage, validation, cursor, menuShow);
+        case 1:
+            showFavoriteBooks();
+            break;
+        case 2:
+            showRecentActivity(&profileOption);
+            break;
+        case 3:
+            *menuShow = 0; // Return Menu
+            break;
+        default:
+            invalidOption();
     }
 
     *cursor = 0;// Stop the loop
@@ -125,7 +141,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
 }
 
 // Request book in the API.
-int getBook(const char *url, bookInfo booksToShow[], int amountToShow) {
+int getBook(const char *url, infoBook booksToShow[], int amountToShow) {
     CURL *curl_handle;
     CURLcode res;
     
@@ -238,7 +254,7 @@ void searchingMessage(bool *searching){
 
 
 // Call functions to the Book's Search in LOG +
-void searchBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
+void searchBook(int *validation, infoBook bookList[], int amountList, int *cursor, int *menuShow){
     // Request Book's title;
     char input[80];
     printf("> Search for a book: ");
@@ -280,13 +296,32 @@ void searchBook(int *validation, bookInfo bookList[], int amountList, int *curso
     
 }
 
-// Show readed books
-void showRecentActivity(int *menuShow){
+// Verify if the book is already in the favorite archive
+bool bookAlreadyFavorited(infoBook *addBook){
+    bool favorited = false;
+
+    FILE *favoriteArchive = fopen("favorite.dat", "a");
+    if (favoriteArchive == NULL)
+        perror("Failed to open the data\n");
+    
+    infoBook favBook;
+     while (fread(&favBook, sizeof favBook, 1, favoriteArchive) > 0){
+        if (favBook.author == addBook->author || favBook.title == addBook->title)
+            favorited = true;
+     }
+
+    fclose(favoriteArchive);
+
+    return favorited;
+}
+
+// Show read books
+void showRecentActivity(int *profileOption){
     char input[5];
     int select = -1;
 
     bool editMode = false;
-    int deleteOption = 0;
+    int editionOption = 0;
 
     int editSavedBooksIndice; // Edit option indice
     int cancelEditingModeIndice; // Cancel Edition option indice
@@ -300,8 +335,8 @@ void showRecentActivity(int *menuShow){
 
     // Show saved books
     int page = 0;
-    bookInfo recentActivity[100];
-    bookInfo bookShow;
+    infoBook recentActivity[100];
+    infoBook bookShow;
     
     
     // Verify if the file is empty
@@ -311,7 +346,7 @@ void showRecentActivity(int *menuShow){
         sleep(1);
         cleanTerminal();
 
-        *menuShow = 2; // Return Profile
+        *profileOption = 0; // Return Menu
     }else{ 
         do{
             int activityID = 0;
@@ -326,15 +361,16 @@ void showRecentActivity(int *menuShow){
                 cleanTerminal();
                 printf("=== Recent activity ===\n");
 
-                printf("1. Delete one readed book\n"
-                "2. Delete all of the readed books\n"
-                "3. Cancel\n\n");
+                printf("1. Delete a read book\n"
+                "2. Delete all read books\n"
+                "3. Favorite a book\n",
+                "4. Exit\n\n");
                 
                 printf("> Choose an edit option: ");
                 fgets(input, sizeof input, stdin);
-                sscanf(input, "%d", &deleteOption);
+                sscanf(input, "%d", &editionOption);
 
-                switch (deleteOption){
+                switch (editionOption){
                     case 1:
                         break;
                     case 2:
@@ -378,7 +414,7 @@ void showRecentActivity(int *menuShow){
 
             if (!editMode){
                 editSavedBooksIndice = lastSavedBookIndice + 1;
-                printf("%d. Edit readed books\n", editSavedBooksIndice);
+                printf("%d. Edit read books\n", editSavedBooksIndice);
             
                 if ((amountBooksSaved() > lastSavedBookIndice)){ // Verify if have more saved books to show
                     // Decide where to put the control options 
@@ -398,25 +434,26 @@ void showRecentActivity(int *menuShow){
                 printf("%d. Cancel editing\n", cancelEditingModeIndice);
             }
             // Catch the user's input
+            
             printf("> Choose an option: ");
             fgets(input, sizeof input, stdin);
             sscanf(input, "%d", &select);
             
-            //Edit readed books function
+            //Edit read books function
             if (!editMode){
-                if (select == editSavedBooksIndice){
+                if (select == editSavedBooksIndice)
                     editMode = true;
-                } else if ((select == showMoreSavedBooksIndice) && ((amountBooksSaved() + 1)  > lastSavedBookIndice)){ // Show more function
+                else if ((select == showMoreSavedBooksIndice) && ((amountBooksSaved() + 1)  > lastSavedBookIndice)) // Show more function
                     page++;
-                } else if (select == returnProfileSavedBooksIndice){ // Return Profile function
-                    *menuShow = 2;
-                } else{ // If the user iserted a invalid option
-                    cleanTerminal();
+                else if (select == returnProfileSavedBooksIndice)// Return Profile function
+                    *profileOption = 0;
+                else{ // If the user iserted a invalid option
                     invalidOption();
+                    printf("select wrong (%d)", select);
                     rewind(dataArchive);
                 }
             } else {
-                if (deleteOption == 1){ 
+                if (editionOption == 1){ 
                     bool edited = false;
 
                     do {
@@ -461,23 +498,44 @@ void showRecentActivity(int *menuShow){
                             }
                         }
                     } while (!edited);
-                } else if (deleteOption == 2){ // Delete the file
+                } else if (editionOption == 2){ // Delete the file
                     FILE *dataArchive = fopen("data.dat", "w");
                     if (dataArchive == NULL)
                         perror("Failed to delete the data\n");
                     
                     fclose(dataArchive);
+                } else if (editionOption == 3){ // Add favorite book
+                    // infoBook addFavBook = recentActivity[select];
+
+                    if (select > ((maxBookShow) + (page * maxBookShow)) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
+                        invalidOption();
+                        printf("ultrapassou");
+                        select = cancelEditingModeIndice;
+                    } else if (!bookAlreadyFavorited(&recentActivity[select])) { // If the selected number is a book
+                        FILE *favoriteArchive = fopen("favorite.dat", "a");
+                        if (favoriteArchive == NULL)
+                            perror("Failed to open the data\n");
+                        
+                        infoBook favoriteBook;
+                        favoriteBook = recentActivity[select];
+
+                        fwrite(&favoriteBook, sizeof favoriteBook, 1, favoriteArchive);
+                        printf("favorite <3");
+
+                        fclose(favoriteArchive);
+                    }
                 }
 
+                ///!!!!!!!!!!!!!!!!!!!!! invalid option está editando """""!!!!!!!!!!!!"
                 editMode = false;
             }
 
-        } while (select != cancelEditingModeIndice); // While the user do not selected the Return Menu option
+        } while (*profileOption == 2); // While the user do not selected the Return Menu option
     }
 }
 
-// Save readed book
-void saveBook(bookInfo *bookLog){
+// Save read book
+void saveBook(infoBook *bookLog){
     FILE *dataArchive = fopen("data.dat", "ab");
     if (dataArchive == NULL) {
         perror("Error to open the data");
@@ -500,13 +558,13 @@ int amountBooksSaved(){
 
     fclose(dataArchive);
 
-    bookInfo bookStruct;
+    infoBook bookStruct;
 
     return (size / sizeof bookStruct);
 }
 
 // Select a book to log
-void selectSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow){
+void selectSearchedBook(int *validation, infoBook bookList[], int amountList, int *cursor, int *menuShow){
     if (*menuShow == 1){
         char input[5];
         printf("> Select a book: ");
@@ -528,7 +586,7 @@ void selectSearchedBook(int *validation, bookInfo bookList[], int amountList, in
             printf("Do you want to Log this book? (y/n): ");
             fgets(input, sizeof input, stdin);
 
-            bookInfo choseBook;
+            infoBook choseBook;
             choseBook = bookList[select - 1];
 
             choseBook.id = amountBooksSaved() + 1;
@@ -570,7 +628,7 @@ void selectSearchedBook(int *validation, bookInfo bookList[], int amountList, in
 void logBook(int *cursor, int *menuShow){
     if (*menuShow == 1){
         int amountToShow = 5;
-        bookInfo booksTitlesToShow[amountToShow];
+        infoBook booksTitlesToShow[amountToShow];
 
         // Verify if the search was correct;
         int searchOk = 0; // 0 -> OK \\ 1 -> Wrong 
