@@ -10,10 +10,13 @@ typedef struct {
 
 typedef struct {
     int id;
-    char title[160], author[80];
-    char year[40];
-    int regDay, regMon, regYear; // The data that the user saved the book
+    char title[160], author[80], year[40];
+    
+    char review[360];
+    int rating;
 
+    int regDay, regMon, regYear; // The data that the user saved the book
+    
 } infoBook;
 
 
@@ -23,7 +26,8 @@ struct MemoryStruct {
 };
 
 void cleanTerminal();
-void getInput(char *inputMessage, int validation, int *cursor, int *menuShow);
+// void getInput(char *inputMessage, int validation, int *cursor, int *menuShow);
+void showMessageOnTerminal(char *message);
 int lowText (char vector[]);
 void writePage(const char *menuName, int optionsNumber, stru_screen options);
 void showMenu(int *cursor, int *menuShow, stru_screen screen);
@@ -41,5 +45,6 @@ void searchingMessage(bool *searching);
 int amountBooksFile(char *fileName);
 bool bookAlreadyFavorited(infoBook *addBook);
 void showFavoriteBooks(int *profileOption);
+void rateBook(infoBook *bookLog);
 
 #endif

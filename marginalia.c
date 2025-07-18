@@ -21,9 +21,9 @@ void cleanTerminal(){
 }
 
 // Show Invalid Message
-void invalidOption(){
+void showMessageOnTerminal(char *message){
     cleanTerminal();
-    printf("!!! Invalid chosen option !!!\n");
+    printf("=== %s ===\n", message);
     fflush(stdout);
     sleep(1);
     cleanTerminal();
@@ -31,7 +31,6 @@ void invalidOption(){
    
 // Calcule how much books have in the data archive
 int amountBooksFile(char *fileName){
-
     FILE *dataArchive = fopen(fileName, "rb");
     if (dataArchive == NULL) {
         perror("Error to open the data");
@@ -64,6 +63,7 @@ void menuInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     cleanTerminal(); // "clean" the terminal
 }
 
+// Show a list of the favorite books
 void showFavoriteBooks(int *profileOption){
     if ((amountBooksFile("favorite.dat") == 0)){
         printf("!!! There is no Favorite Book !!!\n");
@@ -92,7 +92,7 @@ void showFavoriteBooks(int *profileOption){
                     break;
                 
                 default:
-                    invalidOption();
+                    showMessageOnTerminal("Invalid option chosen");
             }
 
             fclose(favoriteArchive);
@@ -123,7 +123,7 @@ void profileInput(char *inputMessage, int validation, int *cursor, int *menuShow
             *menuShow = 0; // Return Menu
             break;
         default:
-            invalidOption();
+            showMessageOnTerminal("Invalid option chosen");
     }
 
     *cursor = 0;// Stop the loop
@@ -154,7 +154,6 @@ int urlToSearch (char string[]){
 
     string[strcspn(string, "\n")] = '\0';
 }
-
 
 // Write a page with options
 void writePage(const char *menuTitle, int optionsNumber, stru_screen screen){ 
@@ -299,14 +298,13 @@ void searchingMessage(bool *searching){
 void searchBook(int *validation, infoBook bookList[], int amountList, int *cursor, int *menuShow){
     // Request Book's title;
     char input[80];
+    printf("What is the title of the book you read?\nWrite 'b' to cancel search\n\n");
     printf("> Search for a book: ");
     fgets(input, sizeof input, stdin);
 
-    int select = 0;
-    sscanf(input, "%d", &select);
     cleanTerminal();
 
-    if (select == -1){
+    if (strcmp(input, "b\n") == 0){
         *menuShow = 0; // Back to MENU
     }else{      
         bool searching = true;
@@ -419,9 +417,11 @@ void showRecentActivity(int *profileOption){
                         break;
                     case 3:
                         break;
+                    case 4:
+                        break;
 
                     default:
-                        invalidOption();
+                        showMessageOnTerminal("Invalid option chosen");
                 }
             }
 
@@ -471,39 +471,41 @@ void showRecentActivity(int *profileOption){
 
                 // printf("Page: %d\nAmout To Show: %d\nLast Id: %d\nlastSavedBookIndice: %d\namountBooksFile(): %d\nrecentActivity[lastIDShowed].id: %d\n", page, amountBooksToShow, lastIDShowed, lastSavedBookIndice, amountBooksFile(), recentActivity[lastIDShowed].id);
                 // printf("amountBooksFile() / maxBookShow = %d", amountBooksFile() / maxBookShow);
-            } else {
+            } else if (editionOption != 2) { // != delete file option
                 cancelEditingModeIndice = lastSavedBookIndice + 1; 
                 printf("%d. Cancel editing\n", cancelEditingModeIndice);
             }
             // Catch the user's input
-            
-            printf("> Choose an option: ");
-            fgets(input, sizeof input, stdin);
-            sscanf(input, "%d", &select);
+            if (editionOption != 2){ // != delete file option
+                printf("> Choose an option: ");
+                fgets(input, sizeof input, stdin);
+                sscanf(input, "%d", &select);
+            }
             
             //Edit read books function
             if (!editMode){
                 if (select == editSavedBooksIndice)
                     editMode = true;
-                else if ((select == showMoreSavedBooksIndice) && ((amountBooksFile("data.dat") + 1)  > lastSavedBookIndice)) // Show more function
+                else if ((select == showMoreSavedBooksIndice) && ((amountBooksFile("data.dat") + 1) > lastSavedBookIndice)) // If user chose Show More && if there are still more books to be shown
                     page++;
                 else if (select == returnProfileSavedBooksIndice)// Return Profile function
                     *profileOption = 0;
                 else{ // If the user iserted a invalid option
-                    invalidOption();
-                    printf("select wrong (%d)", select);
+                    showMessageOnTerminal("Invalid option chosen");
                     rewind(dataArchive);
                 }
             } else {
-                if (editionOption == 1){ 
+                if (editionOption == 1){ // Delete a read book
                     bool edited = false;
 
                     do {
                         if (select == showMoreSavedBooksIndice || select == returnProfileSavedBooksIndice){
-                            invalidOption();
+                            showMessageOnTerminal("Invalid option chosen");
                         } else {
-                            if (select > ((maxBookShow) + (page * maxBookShow)) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
-                                invalidOption();
+                            if (select == ((maxBookShow) + (page * maxBookShow) + 1))// If select is the next number of the last book, this is the Cancel editing option
+                                edited = true;
+                            else if (select > ((maxBookShow) + (page * maxBookShow) + 1) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
+                                showMessageOnTerminal("Invalid option chosen");
                                 edited = true;
                                 select = cancelEditingModeIndice;
                             } else { // If the selected number is a book
@@ -536,21 +538,42 @@ void showRecentActivity(int *profileOption){
                                 rename("temp.dat", "data.dat");
                                 printf("changed\n");
 
+                                showMessageOnTerminal(">>> The book was deleted <<<");
                                 edited = true;
                             }
                         }
                     } while (!edited);
+                    *profileOption = 0; // Return Profile
                 } else if (editionOption == 2){ // Delete the file
-                    FILE *dataArchive = fopen("data.dat", "w");
-                    if (dataArchive == NULL)
-                        perror("Failed to delete the data\n");
-                    
-                    fclose(dataArchive);
-                } else if (editionOption == 3){ // Add favorite book
-                    // infoBook addFavBook = recentActivity[select];
+                    bool validation = false;
 
+                    do{
+                        cleanTerminal();
+                        printf("!!! WARNING !!!\n");
+                        printf("Do you want to clear your reading history? This will also clear your favorite books\n\n");
+                        printf("> Choose an option (y/n): ");
+                        char deleteFile[5];
+                        fgets(deleteFile, sizeof deleteFile, stdin);
+                        
+                        if (strcmp(deleteFile, "y\n") == 0){
+                            FILE *dataArchive = fopen("data.dat", "w");
+                            if (dataArchive == NULL)
+                                perror("Failed to delete the data\n");
+                        
+                            fclose(dataArchive);
+                            showMessageOnTerminal(">>> The data was deleted <<<");
+
+                            validation = true;
+                        } else if (strcmp(deleteFile, "n\n") == 0)
+                            validation = true;
+                         else
+                            showMessageOnTerminal("Invalid option chosen");
+                    } while (!validation);
+
+                    *profileOption = 0; // Return Profile
+                } else if (editionOption == 3){ // Add favorite book
                     if (select > ((maxBookShow) + (page * maxBookShow)) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
-                        invalidOption();
+                        showMessageOnTerminal("Invalid option chosen");
                         select = cancelEditingModeIndice;
                     } else if (!bookAlreadyFavorited(&recentActivity[select])) { // If the selected number is a book
                         FILE *favoriteArchive = fopen("favorite.dat", "ab");
@@ -560,10 +583,16 @@ void showRecentActivity(int *profileOption){
                         fwrite(&recentActivity[select - 1], sizeof recentActivity[select - 1], 1, favoriteArchive);
 
                         fclose(favoriteArchive);
-                    }
-                }
 
-                ///!!!!!!!!!!!!!!!!!!!!! invalid option está editando """""!!!!!!!!!!!!"
+                        showMessageOnTerminal(">>> The book was favorited <<<");
+                    }
+
+                    *profileOption = 0; // Return Profile
+                } else if (editionOption == 4)
+                    *profileOption = 0; // Return Profile
+                else 
+                    showMessageOnTerminal("Invalid option chosen");
+
                 editMode = false;
             }
 
@@ -573,14 +602,48 @@ void showRecentActivity(int *profileOption){
 
 // Save read book
 void saveBook(infoBook *bookLog){
+    printf("ok");
     FILE *dataArchive = fopen("data.dat", "ab");
     if (dataArchive == NULL) {
         perror("Error to open the data");
     }
-
     fwrite(bookLog, sizeof *bookLog, 1, dataArchive);
+    
 
     fclose(dataArchive);
+
+    showMessageOnTerminal(">>> Book saved <<<");
+}
+
+void rateBook(infoBook *bookLog){
+    int bookRating;
+    
+    do { // Catch book rating
+        cleanTerminal();
+
+        printf("=== Rating %s ===\n", bookLog->title);
+
+        printf("Only whole or half-point values are allowed (e.g., 0, 0.5, 1, 1.5, ..., 5)\n\n");
+        printf("> Rating: ");
+        fgets(input, sizeof input, stdin);
+        sscanf(input, "%d", &bookRating);
+    } while (bookRating < 0 || bookRating > 5 || ((int)(bookRating * 2) != bookRating * 2)); // Ensures that the rate is a whole or half-point number;
+    
+    cleanTerminal();
+
+    // Catch book review
+    printf("=== Review %s ===\n", bookLog->title);
+    char bookReview[360];
+    printf("What did you think of the book?\n\n");
+    printf("> Review: ");
+    fgets(bookReview, sizeof bookReview, stdin);
+
+    cleanTerminal();
+
+    bookLog->rating = bookRating;
+    strcpy(bookLog->review, bookReview);
+
+    saveBook(bookLog);
 }
 
 // Select a book to log
@@ -602,10 +665,6 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
 
 
         if (choseList){
-            printf("=== %s (%s) ===\n", bookList[select - 1].title, bookList[select - 1].year);
-            printf("Do you want to Log this book? (y/n): ");
-            fgets(input, sizeof input, stdin);
-
             infoBook choseBook;
             choseBook = bookList[select - 1];
 
@@ -617,15 +676,23 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
             choseBook.regMon = infoTime->tm_mon + 1;
             choseBook.regYear = infoTime->tm_year + 1900;
 
-            if (strcmp(input, "y\n") == 0){
-                saveBook(&choseBook);
-                cleanTerminal();
-                *menuShow = 0;
-            }
-            else if (strcmp(input, "n\n") == 0){
-                cleanTerminal();
-                showLog(cursor, menuShow);
-            }
+            bool validation = false;
+            do{
+                printf("=== %s (%s) ===\n", bookList[select - 1].title, bookList[select - 1].year);
+                printf("\n> Do you want to Log this book? (y/n): ");
+                fgets(input, sizeof input, stdin);
+
+                if (strcmp(input, "y\n") == 0){
+                    rateBook(&choseBook);
+                    cleanTerminal();
+                    *menuShow = 0;
+                }
+                else if (strcmp(input, "n\n") == 0){
+                    cleanTerminal();
+                    showLog(cursor, menuShow);
+                } else
+                    showMessageOnTerminal("Invalid option chosen");
+            } while (!validation);
         }else{
             cleanTerminal();
             switch (select){
@@ -638,7 +705,7 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
                     *menuShow = 0;
                     break;
                 default:
-                    invalidOption();
+                    showMessageOnTerminal("Invalid option chosen");
             }
         }
     }
@@ -675,7 +742,7 @@ void showLog(int *cursor, int *menuShow){
 
 void showProfile(int *cursor, int *menuShow, stru_screen screen){
     if (*menuShow == 2){
-        writePage("USERNAME", screen.amount, screen);
+        writePage("PROFILE", screen.amount, screen);
         profileInput("> Choose an option", 1, cursor, menuShow);
     }
 }
