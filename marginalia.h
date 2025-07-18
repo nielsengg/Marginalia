@@ -38,8 +38,8 @@ void logBook(int *cursor, int *menuShow);
 void saveBook(infoBook *bookLog);
 void showRecentActivity(int *profileOption);
 void searchingMessage(bool *searching);
-int amountBooksSaved();
+int amountBooksFile(char *fileName);
 bool bookAlreadyFavorited(infoBook *addBook);
-void showFavoriteBooks();
+void showFavoriteBooks(int *profileOption);
 
 #endif

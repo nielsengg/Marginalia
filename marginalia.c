@@ -29,6 +29,24 @@ void invalidOption(){
     cleanTerminal();
 }
    
+// Calcule how much books have in the data archive
+int amountBooksFile(char *fileName){
+
+    FILE *dataArchive = fopen(fileName, "rb");
+    if (dataArchive == NULL) {
+        perror("Error to open the data");
+    }
+
+    fseek(dataArchive, 0, SEEK_END);
+    int size = ftell(dataArchive);
+
+    fclose(dataArchive);
+
+    infoBook bookStruct;
+
+    return (size / sizeof bookStruct);
+}
+
 // Show a message and catch the local where the user want to go
 void menuInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     printf("\n");
@@ -46,17 +64,40 @@ void menuInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     cleanTerminal(); // "clean" the terminal
 }
 
-void showFavoriteBooks(){
-    FILE *favoriteArchive = fopen("favorite.dat", "a");
-    if (favoriteArchive == NULL)
-        perror("Failed to open the data\n");
-    
-    infoBook favBook;
-    while (fread(&favBook, sizeof favBook, 1, favoriteArchive) > 0){
-        printf("> %s (%s), %s | Read on %d-%d-%d\n", favBook.title, favBook.year, favBook.author, favBook.regYear, favBook.regMon, favBook.regDay);
-    }
+void showFavoriteBooks(int *profileOption){
+    if ((amountBooksFile("favorite.dat") == 0)){
+        printf("!!! There is no Favorite Book !!!\n");
+        fflush(stdout);
+        sleep(1);
+        cleanTerminal();
 
-    fclose(favoriteArchive);
+        *profileOption = 0; // Return Menu
+    }else{
+        do{
+            FILE *favoriteArchive = fopen("favorite.dat", "r");
+            if (favoriteArchive == NULL)
+                perror("Failed to open the data\n");
+            
+            infoBook favBook;
+            while (fread(&favBook, sizeof favBook, 1, favoriteArchive) > 0){
+                printf("> %s (%s), %s | Read on %d-%d-%d\n", favBook.title, favBook.year, favBook.author, favBook.regYear, favBook.regMon, favBook.regDay);
+            }
+
+            printf("\n> Return Profile (p): ");
+            fgets(input, sizeof input, stdin);
+
+            switch (input[0]){
+                case 'p':
+                    *profileOption = 0;
+                    break;
+                
+                default:
+                    invalidOption();
+            }
+
+            fclose(favoriteArchive);
+        } while (*profileOption == 1);
+    }
 };
 
 void profileInput(char *inputMessage, int validation, int *cursor, int *menuShow){
@@ -71,8 +112,9 @@ void profileInput(char *inputMessage, int validation, int *cursor, int *menuShow
     switch (profileOption){
         case 0:
             profileInput(inputMessage, validation, cursor, menuShow);
+            break;
         case 1:
-            showFavoriteBooks();
+            showFavoriteBooks(&profileOption);
             break;
         case 2:
             showRecentActivity(&profileOption);
@@ -340,7 +382,7 @@ void showRecentActivity(int *profileOption){
     
     
     // Verify if the file is empty
-    if ((amountBooksSaved() == 0)){
+    if ((amountBooksFile("data.dat") == 0)){
         printf("!!! There is no Recent Activity !!!\n");
         fflush(stdout);
         sleep(1);
@@ -363,7 +405,7 @@ void showRecentActivity(int *profileOption){
 
                 printf("1. Delete a read book\n"
                 "2. Delete all read books\n"
-                "3. Favorite a book\n",
+                "3. Favorite a book\n"
                 "4. Exit\n\n");
                 
                 printf("> Choose an edit option: ");
@@ -391,17 +433,17 @@ void showRecentActivity(int *profileOption){
             int amountBooksToShow = maxBookShow;
             
             // Calcule how much saved books will be showed in the last page
-            if ((page == (amountBooksSaved() / maxBookShow)) || (amountBooksSaved() < maxBookShow)) // if is the last page
-                amountBooksToShow = (page > 0) ? (amountBooksSaved() % (page * maxBookShow)) : amountBooksSaved();
+            if ((page == (amountBooksFile("data.dat") / maxBookShow)) || (amountBooksFile("data.dat") < maxBookShow)) // if is the last page
+                amountBooksToShow = (page > 0) ? (amountBooksFile("data.dat") % (page * maxBookShow)) : amountBooksFile("data.dat");
             
             //Show saved books
-            if ((amountBooksSaved() + 1) >= maxBookShow){
+            if ((amountBooksFile("data.dat") + 1) >= maxBookShow){
                 for (int i = 0; i < amountBooksToShow; i++){
                     int indice = i + (page * maxBookShow); // Calcule which book to show in function of the page
                     printf("%d. %s (%s), %s | Read on %d-%d-%d\n", recentActivity[indice].id, recentActivity[indice].title, recentActivity[indice].year, recentActivity[indice].author, recentActivity[indice].regYear, recentActivity[indice].regMon, recentActivity[indice].regDay);
                 }
             }else{
-            for (int i = 0; i < amountBooksSaved(); i++){
+            for (int i = 0; i < amountBooksFile("data.dat"); i++){
                     int indice = i + (page * maxBookShow); // Calcule which book to show in function of the page
                     printf("%d. %s (%s), %s | Read on %d-%d-%d\n", recentActivity[indice].id, recentActivity[indice].title, recentActivity[indice].year, recentActivity[indice].author, recentActivity[indice].regYear, recentActivity[indice].regMon, recentActivity[indice].regDay);
                 }
@@ -416,7 +458,7 @@ void showRecentActivity(int *profileOption){
                 editSavedBooksIndice = lastSavedBookIndice + 1;
                 printf("%d. Edit read books\n", editSavedBooksIndice);
             
-                if ((amountBooksSaved() > lastSavedBookIndice)){ // Verify if have more saved books to show
+                if ((amountBooksFile("data.dat") > lastSavedBookIndice)){ // Verify if have more saved books to show
                     // Decide where to put the control options 
                     showMoreSavedBooksIndice = lastSavedBookIndice + 2;
                     returnProfileSavedBooksIndice = lastSavedBookIndice + 3;
@@ -427,8 +469,8 @@ void showRecentActivity(int *profileOption){
 
                 printf("%d. Return Profile\n\n", returnProfileSavedBooksIndice);
 
-                // printf("Page: %d\nAmout To Show: %d\nLast Id: %d\nlastSavedBookIndice: %d\namountBooksSaved(): %d\nrecentActivity[lastIDShowed].id: %d\n", page, amountBooksToShow, lastIDShowed, lastSavedBookIndice, amountBooksSaved(), recentActivity[lastIDShowed].id);
-                // printf("amountBooksSaved() / maxBookShow = %d", amountBooksSaved() / maxBookShow);
+                // printf("Page: %d\nAmout To Show: %d\nLast Id: %d\nlastSavedBookIndice: %d\namountBooksFile(): %d\nrecentActivity[lastIDShowed].id: %d\n", page, amountBooksToShow, lastIDShowed, lastSavedBookIndice, amountBooksFile(), recentActivity[lastIDShowed].id);
+                // printf("amountBooksFile() / maxBookShow = %d", amountBooksFile() / maxBookShow);
             } else {
                 cancelEditingModeIndice = lastSavedBookIndice + 1; 
                 printf("%d. Cancel editing\n", cancelEditingModeIndice);
@@ -443,7 +485,7 @@ void showRecentActivity(int *profileOption){
             if (!editMode){
                 if (select == editSavedBooksIndice)
                     editMode = true;
-                else if ((select == showMoreSavedBooksIndice) && ((amountBooksSaved() + 1)  > lastSavedBookIndice)) // Show more function
+                else if ((select == showMoreSavedBooksIndice) && ((amountBooksFile("data.dat") + 1)  > lastSavedBookIndice)) // Show more function
                     page++;
                 else if (select == returnProfileSavedBooksIndice)// Return Profile function
                     *profileOption = 0;
@@ -509,18 +551,13 @@ void showRecentActivity(int *profileOption){
 
                     if (select > ((maxBookShow) + (page * maxBookShow)) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
                         invalidOption();
-                        printf("ultrapassou");
                         select = cancelEditingModeIndice;
                     } else if (!bookAlreadyFavorited(&recentActivity[select])) { // If the selected number is a book
-                        FILE *favoriteArchive = fopen("favorite.dat", "a");
+                        FILE *favoriteArchive = fopen("favorite.dat", "ab");
                         if (favoriteArchive == NULL)
                             perror("Failed to open the data\n");
                         
-                        infoBook favoriteBook;
-                        favoriteBook = recentActivity[select];
-
-                        fwrite(&favoriteBook, sizeof favoriteBook, 1, favoriteArchive);
-                        printf("favorite <3");
+                        fwrite(&recentActivity[select - 1], sizeof recentActivity[select - 1], 1, favoriteArchive);
 
                         fclose(favoriteArchive);
                     }
@@ -544,23 +581,6 @@ void saveBook(infoBook *bookLog){
     fwrite(bookLog, sizeof *bookLog, 1, dataArchive);
 
     fclose(dataArchive);
-}
-
-// Calcule how much book have in the data archive
-int amountBooksSaved(){
-    FILE *dataArchive = fopen("data.dat", "rb");
-    if (dataArchive == NULL) {
-        perror("Error to open the data");
-    }
-
-    fseek(dataArchive, 0, SEEK_END);
-    int size = ftell(dataArchive);
-
-    fclose(dataArchive);
-
-    infoBook bookStruct;
-
-    return (size / sizeof bookStruct);
 }
 
 // Select a book to log
@@ -589,7 +609,7 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
             infoBook choseBook;
             choseBook = bookList[select - 1];
 
-            choseBook.id = amountBooksSaved() + 1;
+            choseBook.id = amountBooksFile("data.dat") + 1;
 
             time_t atualTime = time(NULL);
             struct tm *infoTime= localtime(&atualTime);
