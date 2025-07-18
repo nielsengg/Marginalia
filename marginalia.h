@@ -33,7 +33,7 @@ int urlToSearch (char string[]);
 int getBook(const char *url, bookInfo booksToShow[], int amountToShow);
 void searchBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
 static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
-void chooseSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
+void selectSearchedBook(int *validation, bookInfo bookList[], int amountList, int *cursor, int *menuShow);
 void logBook(int *cursor, int *menuShow);
 void saveBook(bookInfo *bookLog);
 void showRecentActivity(int *menuShow);
