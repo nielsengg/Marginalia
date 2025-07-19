@@ -1,16 +1,16 @@
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <curl/curl.h>
-#include <unistd.h>
-#include <time.h>
+#include <stdio.h> // Standard input and output
+#include <string.h> // String manipulation functions
+#include <ctype.h> // Character classification and transformation
+#include <stdlib.h> // Memory allocation, conversions, and general utilities
+#include <stdbool.h> // Boolean type support
+#include <curl/curl.h> // For making HTTP requests and interacting with URLs
+#include <unistd.h> // Sleep feature   
+#include <time.h> // Functions for working with date and time
+#include "cJSON.h" // Parsing and creating JSON data
 
-#include "cJSON.h"
-#include "marginalia.h"
+#include "marginalia.h" 
 
-static char input[80];
+static char input[80]; // Global input
 
 // Functions prototype
 void logBook(int *cursor, int *menuShow);
@@ -20,7 +20,7 @@ void cleanTerminal(){
     printf("\033[2J\033[H");
 }
 
-// Show Invalid Message
+// Show Message on Terminal
 void showMessageOnTerminal(char *message){
     cleanTerminal();
     printf("=== %s ===\n", message);
@@ -47,18 +47,13 @@ int amountBooksFile(char *fileName){
 }
 
 // Show a message and catch the local where the user want to go
-void menuInput(char *inputMessage, int validation, int *cursor, int *menuShow){
+void menuInput(char *inputMessage, int *cursor, int *menuShow){
     printf("\n");
     printf("%s: ", inputMessage);
     fgets(input, sizeof input, stdin);
     sscanf(input, "%ld", cursor);
 
-    if ((*cursor > 0) && (*cursor < 3)){
-        if (validation == 1) // Verification if the menuShow can be changed
-            *menuShow = *cursor; // Change the menu that is showing to the user
-    }
-
-    *cursor = 0;// Stop the loop
+    *menuShow = *cursor; // Change the menu that is showing to the user
 
     cleanTerminal(); // "clean" the terminal
 }
@@ -100,6 +95,7 @@ void showFavoriteBooks(int *profileOption){
     }
 };
 
+// Profile Navigation
 void profileInput(char *inputMessage, int validation, int *cursor, int *menuShow){
     printf("\n");
     printf("%s: ", inputMessage);
@@ -181,7 +177,7 @@ static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, voi
     return realsize;
 }
 
-// Request book in the API.
+// Request book in the API
 int getBook(const char *url, infoBook booksToShow[], int amountToShow) {
     CURL *curl_handle;
     CURLcode res;
@@ -615,6 +611,7 @@ void saveBook(infoBook *bookLog){
     showMessageOnTerminal(">>> Book saved <<<");
 }
 
+// Rate eread books
 void rateBook(infoBook *bookLog){
     int bookRating;
     
@@ -730,7 +727,7 @@ void logBook(int *cursor, int *menuShow){
 
 void showMenu(int *cursor, int *menuShow, stru_screen screen){
     writePage("MARGINALIA", screen.amount, screen);
-    menuInput("> Choose an option", 1, cursor, menuShow);
+    menuInput("> Choose an option", cursor, menuShow);
 }
 
 void showLog(int *cursor, int *menuShow){
