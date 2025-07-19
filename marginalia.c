@@ -354,7 +354,7 @@ bool bookAlreadyFavorited(infoBook *addBook){
 // Show read books
 void showRecentActivity(int *profileOption){
     char input[5];
-    int select = -1;
+    int showRecentActivityOption = -1;
 
     bool editMode = false;
     int editionOption = 0;
@@ -475,16 +475,16 @@ void showRecentActivity(int *profileOption){
             if (editionOption != 2){ // != delete file option
                 printf("> Choose an option: ");
                 fgets(input, sizeof input, stdin);
-                sscanf(input, "%d", &select);
+                sscanf(input, "%d", &showRecentActivityOption);
             }
             
             //Edit read books function
             if (!editMode){
-                if (select == editSavedBooksIndice)
+                if (showRecentActivityOption == editSavedBooksIndice)
                     editMode = true;
-                else if ((select == showMoreSavedBooksIndice) && ((amountBooksFile("data.dat") + 1) > lastSavedBookIndice)) // If user chose Show More && if there are still more books to be shown
+                else if ((showRecentActivityOption == showMoreSavedBooksIndice) && ((amountBooksFile("data.dat") + 1) > lastSavedBookIndice)) // If user chose Show More && if there are still more books to be shown
                     page++;
-                else if (select == returnProfileSavedBooksIndice)// Return Profile function
+                else if (showRecentActivityOption == returnProfileSavedBooksIndice)// Return Profile function
                     *profileOption = 0;
                 else{ // If the user iserted a invalid option
                     showMessageOnTerminal("Invalid option chosen");
@@ -495,16 +495,16 @@ void showRecentActivity(int *profileOption){
                     bool edited = false;
 
                     do {
-                        if (select == showMoreSavedBooksIndice || select == returnProfileSavedBooksIndice){
+                        if (showRecentActivityOption == showMoreSavedBooksIndice || showRecentActivityOption == returnProfileSavedBooksIndice){
                             showMessageOnTerminal("Invalid option chosen");
                         } else {
-                            if (select == ((maxBookShow) + (page * maxBookShow) + 1))// If select is the next number of the last book, this is the Cancel editing option
+                            if (showRecentActivityOption == ((maxBookShow) + (page * maxBookShow) + 1))// If showRecentActivityOption is the next number of the last book, this is the Cancel editing option
                                 edited = true;
-                            else if (select > ((maxBookShow) + (page * maxBookShow) + 1) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
+                            else if (showRecentActivityOption > ((maxBookShow) + (page * maxBookShow) + 1) || showRecentActivityOption < (page * maxBookShow)){ // Checks whether the showRecentActivityOptioned book is being showed
                                 showMessageOnTerminal("Invalid option chosen");
                                 edited = true;
-                                select = cancelEditingModeIndice;
-                            } else { // If the selected number is a book
+                                showRecentActivityOption = cancelEditingModeIndice;
+                            } else { // If the showRecentActivityOptioned number is a book
                                 FILE *dataArchive = fopen("data.dat", "r");
                                 if (dataArchive == NULL)
                                     perror("Failed to open the data\n");
@@ -516,7 +516,7 @@ void showRecentActivity(int *profileOption){
                                 int activityID = 0;
                                 bool deletedBook = false;
                                 while (fread(&recentActivity[activityID], sizeof recentActivity[activityID], 1, dataArchive) > 0) {
-                                    if (recentActivity[activityID].id != select){
+                                    if (recentActivity[activityID].id != showRecentActivityOption){
                                         if (deletedBook)
                                             recentActivity[activityID].id = recentActivity[activityID].id - 1; // Reorganize the IDs
 
@@ -568,15 +568,15 @@ void showRecentActivity(int *profileOption){
 
                     *profileOption = 0; // Return Profile
                 } else if (editionOption == 3){ // Add favorite book
-                    if (select > ((maxBookShow) + (page * maxBookShow)) || select < (page * maxBookShow)){ // Checks whether the selected book is being showed
+                    if (showRecentActivityOption > ((maxBookShow) + (page * maxBookShow)) || showRecentActivityOption < (page * maxBookShow)){ // Checks whether the selected book is being showed
                         showMessageOnTerminal("Invalid option chosen");
-                        select = cancelEditingModeIndice;
-                    } else if (!bookAlreadyFavorited(&recentActivity[select])) { // If the selected number is a book
+                        showRecentActivityOption = cancelEditingModeIndice;
+                    } else if (!bookAlreadyFavorited(&recentActivity[showRecentActivityOption])) { // If the showRecentActivityOptioned number is a book
                         FILE *favoriteArchive = fopen("favorite.dat", "ab");
                         if (favoriteArchive == NULL)
                             perror("Failed to open the data\n");
                         
-                        fwrite(&recentActivity[select - 1], sizeof recentActivity[select - 1], 1, favoriteArchive);
+                        fwrite(&recentActivity[showRecentActivityOption - 1], sizeof recentActivity[showRecentActivityOption - 1], 1, favoriteArchive);
 
                         fclose(favoriteArchive);
 
@@ -652,18 +652,18 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
 
         cleanTerminal();
 
-        int select;
+        int searchedBookOption;
         bool choseList;
-        sscanf(input, "%d", &select);
+        sscanf(input, "%d", &searchedBookOption);
 
         //Verify if the user chose a book instead to research or return menu
-        if (select > 0 && select < 6)
+        if (searchedBookOption > 0 && searchedBookOption < 6)
             choseList = true;
 
 
         if (choseList){
             infoBook choseBook;
-            choseBook = bookList[select - 1];
+            choseBook = bookList[searchedBookOption - 1];
 
             choseBook.id = amountBooksFile("data.dat") + 1;
 
@@ -675,7 +675,7 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
 
             bool validation = false;
             do{
-                printf("=== %s (%s) ===\n", bookList[select - 1].title, bookList[select - 1].year);
+                printf("=== %s (%s) ===\n", bookList[searchedBookOption - 1].title, bookList[searchedBookOption - 1].year);
                 printf("\n> Do you want to Log this book? (y/n): ");
                 fgets(input, sizeof input, stdin);
 
@@ -692,7 +692,7 @@ void selectSearchedBook(int *validation, infoBook bookList[], int amountList, in
             } while (!validation);
         }else{
             cleanTerminal();
-            switch (select){
+            switch (searchedBookOption){
                 case 6: // Research option
                     printf("=== I read... ===\n");
                     searchBook(validation, bookList, amountList, cursor, menuShow);
