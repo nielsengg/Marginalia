@@ -1,26 +1,35 @@
-// import BookSearch from '../components/BookSearch';
+import { SearchModal } from '../components/SearchModal';
+import { useState } from 'react';
+import '../assets/styles/home.css';
 
 export default function Home() {
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   return (
     <div id="pricipalContainer">
         <div id="navigationBar">
-            <div className="navLink">Log +</div>
-            <div className="navLink">Search</div>
+            <button id='logButton' className="navLink" onClick={() => setIsSearchModalOpen(true)}>Log +</button>
+            <button className="navLink">Search</button>
 
             <div id="logoBox">
               <img id="logo" src="/img-maginalia-logo.png" alt="Rabbit Marginalia Logo"/>
             </div>
             
 
-            <div className="navLink">Profile</div>
-            <div className="navLink">Settings</div>
+            <button className="navLink">Profile</button>
+            <button className="navLink">Settings</button>
         </div>
 
         <main id="contentContainer">
             <div id="readingBooksContainer">
 
             </div>
+
+            {/* Verify if searchModal is open to close it */}
+            {isSearchModalOpen && ( 
+              <SearchModal onClose={() => setIsSearchModalOpen(false)} /> 
+            )}
         </main>
       </div>
   );
 }
+
