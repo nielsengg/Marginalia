@@ -7,16 +7,16 @@ export default function Home() {
   return (
     <div id="pricipalContainer">
         <div id="navigationBar">
-            <button id='logButton' className="navLink" onClick={() => setIsSearchModalOpen(true)}>Log +</button>
-            <button className="navLink">Search</button>
+            <button id='logButton' className="navLink borderRadius" onClick={() => setIsSearchModalOpen(true)}>Log +</button>
+            <button className="navLink borderRadius">Search</button>
 
             <div id="logoBox">
               <img id="logo" src="/img-maginalia-logo.png" alt="Rabbit Marginalia Logo"/>
             </div>
             
 
-            <button className="navLink">Profile</button>
-            <button className="navLink">Settings</button>
+            <button className="navLink borderRadius">Profile</button>
+            <button className="navLink borderRadius">Settings</button>
         </div>
 
         <main id="contentContainer">

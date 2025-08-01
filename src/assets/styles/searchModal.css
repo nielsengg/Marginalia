@@ -2,6 +2,34 @@
     border-radius: 5px;
 }
 
+.cursorPointer{
+    cursor: pointer;
+}
+
+.bookItemSearch{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 0.8vw;
+
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.authorName{
+    font-size: 0.9rem;
+
+    color: rgb(65, 65, 65);
+}
+
+.bookItemSearch:hover{
+    background-color: rgb(205, 177, 50);
+}
+
 #modalSearchContainer{
     display: flex;
     justify-content: center;
@@ -32,6 +60,11 @@
     padding: 1rem;
 
     background: linear-gradient(to bottom, #2D2D2D, #232222);
+
+    box-shadow: 0px 0px 80px 10px rgba(0, 0, 0, 0.418);
+
+    position: relative;
+
 }
 
 #headerModalSearch{
@@ -59,11 +92,15 @@
 }
 
 #bodyModalSearch{
+    position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
     width: 100%;
+    max-height: 8rem;
+
     padding-top: 3rem;
     padding-bottom: 3rem;
 }
@@ -71,4 +108,24 @@
 #searchInput{
     width: 80%;
     height: 2rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border: none;
+}
+
+
+#searchResultsContainer{
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    width: 82%;
+    max-height: 162px;
+
+    overflow-y: scroll;
+
+    margin-top: 12rem;
+
+    z-index: 99999;
+    background-color: rgb(202, 202, 202);
 }

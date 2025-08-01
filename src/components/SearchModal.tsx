@@ -1,11 +1,60 @@
 import '../assets/styles/searchModal.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+
+// Set search delay
+const debounce = (func: (query: string) => void, delay: number) => {
+  let timeoutId: number;
+  return (query: string) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => func(query), delay);
+  };
+};
 
 type Props = {
   onClose: () => void;
 };
 
+interface Book {
+  key: string;
+  title: string;
+  author_name?: string[];
+  cover_i?: number;
+  first_publish_year: number;
+}
+
 export function SearchModal({ onClose }: Props) {
+  const [searchTerm, setSearchTerm] = useState(""); // Catch the user's input
+  const [searchResults, setSearchResults] = useState<Book[]>([]); // Catch the books results
+
+  const searchBooks = async (query: string) => {
+    // Search validation
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      // API request
+      const response = await fetch(
+        `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&fields=key,title,author_name,cover_i,first_publish_year`
+      );
+      
+      // Verify if the answer is valid
+      if (!response.ok) throw new Error("Error to search");
+      
+      // Extracts and types data
+      const data = await response.json() as { docs: Book[] };
+      setSearchResults(data.docs || []); // Update results
+
+    } catch (error) {
+      console.error("Error:", error);
+      setSearchResults([]); // If there is any error, clean setSearchResults
+    } 
+  };
+
+  const debouncedSearch = debounce(searchBooks, 500); // 500ms de delay
+
   return (
     <div id="modalSearchContainer">
         <AnimatePresence>
@@ -18,11 +67,26 @@ export function SearchModal({ onClose }: Props) {
             >
                 <div id="headerModalSearch">
                     <h2 id='messageModalSearch'>Add to your books...</h2>
-                    <button id='exitModalSearch' onClick={onClose}>X</button>
+                    <button id='exitModalSearch' className='borderRadius cursorPointer' onClick={onClose}>X</button>
                 </div>
                 
                 <div id="bodyModalSearch">
-                    <input id='searchInput' className='borderRadius' type="text" placeholder="Search for book..."/>
+                    <input id='searchInput' className='borderRadius' value={searchTerm} onChange={(e) => {setSearchTerm(e.target.value); debouncedSearch(e.target.value);}} type="text" autoComplete="off" placeholder="Search for book..."/>
+                    
+                    <div id="searchResultsContainer" className='borderRadius'>
+                    {searchTerm.trim() && ( // Do not show the results when the input is empty
+                        <>
+                        {searchResults.map((book) => (
+                          <div className="bookItemSearch cursorPointer">
+                            <div key={book.key}>{book.title} ({book.first_publish_year})</div>
+                            <div className='authorName'> {book.author_name}</div>
+
+                          </div>
+                          
+                        ))}
+                        </>
+                    )}
+                    </div>
                 </div>
             </motion.div>
         </AnimatePresence>
