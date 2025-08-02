@@ -1,4 +1,6 @@
-import '../assets/styles/BookDetailPage.css';
+import '../assets/styles/BookDetailPage.css'
+
+import Header from '../components/Header';
 
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -52,35 +54,38 @@ export function BookDetailPage() {
     fetchBookDetails();
   }, [id]);
 
+  // Show Loading essagen while the book deitails are not processed //
   if (!book) return (
-    <div id='bookPageLoading'>
-      <div id="loadingMessage">
-        Loading...
-      </div>
-      
+    <div id="bookPageContainer">
+      <>
+        <Header />
+
+        <main id="bodyBookDetail" style={{ margin: 0 }}>
+          <div id='bookPageLoading'>
+            <div id="loadingMessage">
+              Loading...
+            </div>
+          </div>
+        </main>
+      </>
     </div>
   );
+  // ------------------------------------------------------------- //
+  
 
-  // Define authors name
+  // Define authors name //
   const displayAuthors = 
     book.author_name || 
     authorNames || 
-    ["Autor desconhecido"];
-
-  
+    ["Unknow author"];
+// --------------------s //
+ 
 
   return (
-    
     <div id="bookPageContainer">
-      <div id="navigationBar">
+      <Header />
 
-        <div id="logoBox">
-          <img id="logo" src="/img-maginalia-logo.png" alt="Rabbit Marginalia Logo"/>
-        </div>
-    
-      </div>
-
-      <div id="bodyBookDetail">
+      <main id="bodyBookDetail">
         {book.covers?.[0] && (
           <img
           id='bookCover'
@@ -108,11 +113,12 @@ export function BookDetailPage() {
             <div id="bookDescription">
                 {typeof book.description === 'string'
                 ? book.description
-                : book.description?.value || "Just a book."}
+                : book.description?.value || "Just a book without description."}
           </div>
-        </div>  
-      </div>
-       
-    </div>
+        </div> 
+
+        
+      </main>
+    </div>  
   );
 }

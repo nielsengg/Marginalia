@@ -2,51 +2,6 @@
     border-radius: 5px;
 }
 
-#navigationBar{
-    padding-top: 0.5rem;
-
-    height: 100%;   
-    grid-column: span 16; 
-    grid-row: span 1;
-
-    display: flex;
-    flex-direction: row;
-    gap: 3rem;
-
-    justify-content: center;
-    align-items: center;
-}
-
-#logoBox{
-    display: flex;
-    align-items: center;
-    height: 3.5rem;
-    
-}
-
-#logo{
-    height: 100%;
-}
-
-.navLink{
-    color: white;
-    background: none;
-}
-
-#bodyBookDetail{
-    margin-top: 5rem;
-
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-
-    height: 100%;
-
-    grid-row: 2 / span 8;
-    grid-column: span 16; 
-}
-
-
 #root{
     height: 100vh;
     width: 100vw;
@@ -80,7 +35,19 @@
     max-width: 1200px;
     height: 100%;                    
     margin: 0 auto;    
+}
 
+#bodyBookDetail{
+    margin-top: 5rem;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    height: 100%;
+
+    grid-row: 2 / span 8;
+    grid-column: span 16; 
 }
 
 #bookCover{

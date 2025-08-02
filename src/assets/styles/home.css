@@ -24,38 +24,6 @@ body{
     align-items: baseline;
 }
 
-#navigationBar{
-    
-    padding-top: 0.5rem;
-
-    height: 100%;   
-    grid-column: span 16; 
-    grid-row: span 1;
-
-    display: flex;
-    flex-direction: row;
-    gap: 3rem;
-
-    justify-content: center;
-    align-items: center;
-}
-
-#logoBox{
-    display: flex;
-    align-items: center;
-    height: 3.5rem;
-    
-}
-
-#logo{
-    height: 100%;
-}
-
-.navLink{
-    color: white;
-    background: none;
-}
-
 #contentContainer{
     /* background: lightgray; */
     /* padding: 20px; */
