@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { SearchModal } from '../components/SearchModal';
-
 import '../assets/styles/Header.css';
+import { useNavigate } from 'react-router-dom';
 
-export default function Header() {
+
+
+export default function Header(){
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
     const [searchBarOff, searchBarOn] = useState(false);
+
+    const [titleSearch, setTitleSearch] = useState("");
+
+
+    const navigate = useNavigate();
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter"){
+            navigate(`/search/${titleSearch}`); 
+            setIsSearchModalOpen(false);
+        }
+    }
+
 
     return (
         <header id="headerMarginalia">
@@ -20,7 +34,17 @@ export default function Header() {
             </button>
            
            <div id="rightNavContainer">
-                <input id='searchBar' type="text" className={`${searchBarOff ? "showItem" : "hiddenItem"}`}/>
+                <input
+                    id='searchBar'
+                    type="text" 
+                    className={ `borderRadius ${searchBarOff ? "showItem" : "hiddenItem"}`}
+
+                    value={titleSearch}
+                    onChange={(e) => setTitleSearch(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Search a book..."
+                    autoComplete="off"
+                />
 
                 <button
                     className={`navLink borderRadius cursorPointer ${searchBarOff ? "showItem" : "hiddenItem"}`}
@@ -46,11 +70,8 @@ export default function Header() {
 
             {/* Verify if searchModal is open to close it */}
             {isSearchModalOpen && ( 
-            <SearchModal onClose={() => setIsSearchModalOpen(false)} /> 
+                <SearchModal onClose={() => setIsSearchModalOpen(false)} /> 
             )} 
         </header>
     );
 }
-
-
-

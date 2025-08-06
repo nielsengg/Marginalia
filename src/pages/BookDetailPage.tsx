@@ -1,22 +1,12 @@
 import '../assets/styles/BookDetailPage.css'
 
 import Header from '../components/Header';
+import type { Book } from '../models/modelBook'
 
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-interface Book {
-  key: string;
-  title: string;
 
-  authors?: Array<{ author: { key: string } }>; 
-  author_name?: string[]; 
-
-  covers?: number[];
-  first_publish_year?: number;
-  description?: string | { value: string };
-  subjects?: string[];
-}
 
 export function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -78,7 +68,7 @@ export function BookDetailPage() {
     book.author_name || 
     authorNames || 
     ["Unknow author"];
-// --------------------s //
+  // ------------------- //
  
 
   return (
@@ -88,10 +78,10 @@ export function BookDetailPage() {
       <main id="bodyBookDetail">
         {book.covers?.[0] && (
           <img
-          id='bookCover'
-          src={`https://covers.openlibrary.org/b/id/${book.covers[0]}-L.jpg`}
-          alt={`Cover ${book.title}`}
-          className='borderRadius'
+            id='bookCover'
+            src={`https://covers.openlibrary.org/b/id/${book.covers[0]}-L.jpg`}
+            alt={`Cover ${book.title}`}
+            className='borderRadius'
           />
         )}
         {!book.covers?.[0] &&(
@@ -108,13 +98,13 @@ export function BookDetailPage() {
 
             <p id='bookAuthor'>Author: {displayAuthors.join(", ")}</p>
             {book.first_publish_year && (
-                <p>Ano de publicação: {book.first_publish_year}</p>
+                <p>Publish Year: {book.first_publish_year}</p>
             )}
             <div id="bookDescription">
                 {typeof book.description === 'string'
                 ? book.description
                 : book.description?.value || "Just a book without description."}
-          </div>
+            </div>
         </div> 
 
         

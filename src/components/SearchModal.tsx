@@ -2,6 +2,8 @@ import '../assets/styles/searchModal.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
+import type { Book } from "../models/modelBook";
+
 import { useNavigate } from 'react-router-dom';
 
 // Set search delay
@@ -28,19 +30,6 @@ type Props = {
   onClose: () => void;
 };
 
-interface Book {
-  key: string;
-  title: string;
-
-  author?: { key: string };
-  author_name?: string[];
-
-  covers?: number;
-  first_publish_year: number;
-
-  description?: string | { value: string };
-  subjects?: string[];
-}
 
 export function SearchModal({ onClose }: Props) {
   const [searchTerm, setSearchTerm] = useState(""); // Catch the user's input
@@ -49,9 +38,9 @@ export function SearchModal({ onClose }: Props) {
   const navigate = useNavigate();
 
   const handleBookClick = (bookKey: string) => {
-    const id = bookKey.replace('/works/', ''); // Remove a parte fixa da chave
-    navigate(`/book/${id}`); // Navega para a rota dinâmica
-    onClose(); // Fecha o modal após navegar (opcional)
+    const id = bookKey.replace('/works/', ''); 
+    navigate(`/book/${id}`); 
+    onClose();
   };
 
   const searchBooks = async (query: string) => {
@@ -64,7 +53,7 @@ export function SearchModal({ onClose }: Props) {
     try {
       // API request
       const response = await fetch(
-        `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}&fields=key,title,author_name,covers,first_publish_year`
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&fields=key,title,author_name,covers,first_publish_year`
       );
       
       // Verify if the answer is valid
@@ -76,7 +65,7 @@ export function SearchModal({ onClose }: Props) {
 
       const booksWithAuthors = await Promise.all(
       data.docs.map(async (book: any) => {
-        let authorName = "Autor desconhecido";
+        let authorName = "Unknow author";
         
         if (book.author?.key) {
           authorName = await fetchAuthorName(book.author.key);
@@ -118,7 +107,16 @@ export function SearchModal({ onClose }: Props) {
                 </div>
                 
                 <div id="bodyModalSearch">
-                    <input id='searchInput' className='borderRadius' value={searchTerm} onChange={(e) => {setSearchTerm(e.target.value); debouncedSearch(e.target.value);}} type="text" autoComplete="off" placeholder="Search for book..."/>
+                    <input 
+                    id='searchInput' 
+                    className='borderRadius' 
+                    value={searchTerm} 
+                    onChange={(e) => {setSearchTerm(e.target.value); 
+                    debouncedSearch(e.target.value);}}
+                    type="text" 
+                    autoComplete="off" 
+                    placeholder="Search for book..."/>
+
                     
                     <div id="searchResultsContainer" className='borderRadius'>
                     {searchTerm.trim() && ( // Do not show the results when the input is empty

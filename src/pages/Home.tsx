@@ -2,7 +2,7 @@ import { SearchModal } from '../components/SearchModal';
 import Header from '../components/Header';
 
 import { useState } from 'react';
-import '../assets/styles/home.css';
+import '../assets/styles/Home.css';
 
 export default function Home() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
