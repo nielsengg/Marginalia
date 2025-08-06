@@ -53,7 +53,7 @@ export function SearchModal({ onClose }: Props) {
     try {
       // API request
       const response = await fetch(
-        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&fields=key,title,author_name,covers,first_publish_year`
+        `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}`
       );
       
       // Verify if the answer is valid
@@ -89,7 +89,7 @@ export function SearchModal({ onClose }: Props) {
       } 
     };
 
-  const debouncedSearch = debounce(searchBooks, 500); // 500ms de delay
+  const debouncedSearch = debounce(searchBooks, 0); // 500ms de delay
 
   return (
     <div id="modalSearchContainer">
