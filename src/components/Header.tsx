@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { SearchModal } from '../components/SearchModal';
 import '../assets/styles/Header.css';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +10,18 @@ export default function Header(){
     const [searchBarOff, searchBarOn] = useState(false);
 
     const [titleSearch, setTitleSearch] = useState("");
+
+
+    // Put the input in focus //
+    const inputRef = useRef<HTMLInputElement>(null);
+    
+    useEffect(() => {
+        if (searchBarOff) {
+            inputRef.current?.focus();
+            console.info("ok");
+        }
+    }, [searchBarOff]);
+    // ---------------------- //
 
 
     const navigate = useNavigate();
@@ -35,6 +47,7 @@ export default function Header(){
            
            <div id="rightNavContainer">
                 <input
+                    ref={inputRef}
                     id='searchBar'
                     type="text" 
                     className={ `borderRadius ${searchBarOff ? "showItem" : "hiddenItem"}`}

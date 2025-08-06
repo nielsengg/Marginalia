@@ -1,4 +1,4 @@
-import '../assets/styles/BookDetailPage.css'
+import styles from '../assets/styles/BookDetailPage.module.css'
 
 import Header from '../components/Header';
 import type { Book } from '../models/modelBook'
@@ -46,13 +46,13 @@ export function BookDetailPage() {
 
   // Show Loading essagen while the book deitails are not processed //
   if (!book) return (
-    <div id="bookPageContainer">
+    <div className={`${styles.contentBody}`}>
       <>
         <Header />
 
-        <main id="bodyBookDetail" style={{ margin: 0 }}>
-          <div id='bookPageLoading'>
-            <div id="loadingMessage">
+        <main className={`${styles.bodyBookDetail}`} style={{ margin: 0 }}>
+          <div className={`${styles.bookPageLoading}`}>
+            <div className={`${styles.loadingMessage}`}>
               Loading...
             </div>
           </div>
@@ -72,16 +72,15 @@ export function BookDetailPage() {
  
 
   return (
-    <div id="bookPageContainer">
+    <div className="contentBody">
       <Header />
 
-      <main id="bodyBookDetail">
+      <main className={`${styles.bodyBookDetail}`}>
         {book.covers?.[0] && (
           <img
-            id='bookCover'
+            className={`${styles.bookCover} ${styles.borderRadius}`}
             src={`https://covers.openlibrary.org/b/id/${book.covers[0]}-L.jpg`}
             alt={`Cover ${book.title}`}
-            className='borderRadius'
           />
         )}
         {!book.covers?.[0] &&(
@@ -89,18 +88,18 @@ export function BookDetailPage() {
             id='bookCover'
             src={`/img-book-template.png`}
             alt={`No book cover`}
-            className='borderRadius'
+            className={`${styles.borderRadius}`}
             />
         )}
 
-        <div id="bookInfo">
-            <h1 id='bookTitle'>{book.title}</h1>
+        <div className={`${styles.bookInfo}`}>
+            <h1 className={`${styles.bookTitle}`}>{book.title}</h1>
 
-            <p id='bookAuthor'>Author: {displayAuthors.join(", ")}</p>
+            <p className={`${styles.bookAuthor}`}>Author: {displayAuthors.join(", ")}</p>
             {book.first_publish_year && (
                 <p>Publish Year: {book.first_publish_year}</p>
             )}
-            <div id="bookDescription">
+            <div className={`${styles.bookDescription}`}>
                 {typeof book.description === 'string'
                 ? book.description
                 : book.description?.value || "Just a book without description."}

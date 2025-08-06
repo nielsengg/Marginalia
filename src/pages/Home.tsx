@@ -10,7 +10,7 @@ export default function Home() {
     <div id="pricipalContainer">
         <Header />
 
-        <main id="contentContainer">
+        <main id="contentBody">
             <div id="readingBooksContainer">
 
             </div>

@@ -1,4 +1,5 @@
-import '../assets/styles/BookSearchPage.css'
+import  styles from '../assets/styles/BookSearchPage.module.css'
+import '../assets/styles/global.css'
 import Header from '../components/Header';
 import { fetchBooks } from '../utils/fetchBooks'
 import type { Book } from '../models/modelBook'
@@ -38,41 +39,42 @@ export function BookSearchPage() {
   }, [title]);
 
   return (
-    <div id="bookPageContainer">
+    <div className='contentBody'>
       <Header />
 
-      <main id="bodyBookSearch">
+      <main className={`${styles.bodyBookSearch}`}>
           {loading ? (
-            <div id='bookPageLoading'>
-              <div id="loadingMessage">
+            <div className={`${styles.bookPageLoading}`}>
+              <div className={`${styles.loadingMessage}`}>
                 Loading...
               </div>
             </div>
           ) : error ? (
             <p style={{ color: 'red' }}>{error}</p>
           ) : (items.length != 0) ? ( // Verify if the items array has any book
-            <ul id='bookSearchList'>
+            <ul className={`${styles.bookSearchList}`}>
               {items.map((book) => (
-                <li className='bookSearchItem' key={book.key}>
+                <li className={styles.bookSearchItem} key={book.key}>
                   {book.cover_edition_key?.[0] && (
                     <img
                     src={`https://covers.openlibrary.org/b/olid/${book.cover_edition_key}.jpg`}
                     alt={`Cover ${book.title}`}
-                    className='borderRadius bookCover'
+                    className={`${styles.borderRadius} ${styles.bookCover}`}
+                    
                     /> 
                   )}
                   {!book.cover_edition_key?.[0] &&(
                     <img 
                       src={`/img-book-template.png`}
                       alt={`No book cover`}
-                      className='borderRadius bookCover'
+                      className={`${styles.borderRadius} ${styles.bookCover}`}
                       />
                   )}
-                  <div className='bookInfo'>
-                    <h2 className='bookTitle goToPageDetails' onClick={() => handleBookClick(book.key)}>{book.title}</h2>
+                  <div className={`${styles.bookInfo}`}>
+                    <h2 className={`${styles.bookTitle} ${styles.goToPageDetails}`} onClick={() => handleBookClick(book.key)}>{book.title}</h2>
 
-                    <p className='bookDescription'>Writed by {book.author_name}.</p>
-                    <p className='bookDescription'>Published in {book.first_publish_year}.</p>
+                    <p className={`${styles.bookDescription}`}>Writed by {book.author_name}.</p>
+                    <p className={`${styles.bookDescription}`}>Published in {book.first_publish_year}.</p>
 
 
                     </div>
@@ -80,8 +82,8 @@ export function BookSearchPage() {
               ))}
             </ul>
           ) : (
-            <div id='bookPageLoading'>
-              <div id="loadingMessage">
+            <div className={`${styles.bookPageLoading}`}>
+              <div className={`${styles.loadingMessage}`}>
                 There were no matches for your search term.
               </div>
             </div>

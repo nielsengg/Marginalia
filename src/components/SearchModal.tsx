@@ -1,11 +1,13 @@
 import '../assets/styles/searchModal.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import type { Book } from "../models/modelBook";
 
 import { useNavigate } from 'react-router-dom';
 
+
+  
 // Set search delay
 const debounce = (func: (query: string) => void, delay: number) => {
   let timeoutId: number;
@@ -32,6 +34,15 @@ type Props = {
 
 
 export function SearchModal({ onClose }: Props) {
+  
+  // Put the input in focus //
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+  // ---------------------- //
+
+
   const [searchTerm, setSearchTerm] = useState(""); // Catch the user's input
   const [searchResults, setSearchResults] = useState<Book[]>([]); // Catch the books results
 
@@ -108,6 +119,7 @@ export function SearchModal({ onClose }: Props) {
                 
                 <div id="bodyModalSearch">
                     <input 
+                    ref={inputRef}
                     id='searchInput' 
                     className='borderRadius' 
                     value={searchTerm} 

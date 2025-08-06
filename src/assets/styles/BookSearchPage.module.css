@@ -28,7 +28,7 @@
 }
 
 .bookCover{
-    height: 90%;
+    max-height: 90%;
     width: 6rem;
 
     border: 3px solid;
@@ -53,38 +53,25 @@
 }
 
 .bookDescription{
-    color: rgb(232, 232, 232);
+    color: rgb(188, 188, 188);
 
     font-size: large;
     margin-top: 0;
 }
 
-
-#root{
-    height: 100vh;
-    width: 100vw;
-
-    background: linear-gradient(to bottom, #2D2D2D, #232222);
-
-    overflow-y: scroll;
-    overflow-x: hidden;
-
-    /* padding-bottom: 3rem; */
-}
-
-#bookPageLoading{
+.bookPageLoading{
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#loadingMessage{
+.loadingMessage{
     color: white;
     font-size: xx-large;
 }
 
-#bookPageContainer{
+.bookPageContainer{
     display: grid;                         
     grid-template-columns: repeat(16, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -95,7 +82,7 @@
     margin: 0 auto;    
 }
 
-#bodyBookSearch{
+.bodyBookSearch{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -108,7 +95,7 @@
     margin-top: 5rem;
 }
 
-#bookSearchList{
+.bookSearchList{
     display: flex;
     flex-direction: column;
 
