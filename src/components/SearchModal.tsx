@@ -1,143 +1,110 @@
-import '../assets/styles/searchModal.css';
+import styles from '../assets/styles/searchModal.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
 
 import type { Book } from "../models/modelBook";
-
-import { useNavigate } from 'react-router-dom';
-
-
-  
-// Set search delay
-const debounce = (func: (query: string) => void, delay: number) => {
-  let timeoutId: number;
-  return (query: string) => {
-    window.clearTimeout(timeoutId);
-    timeoutId = window.setTimeout(() => func(query), delay);
-  };
-};
-
-const fetchAuthorName = async (authorKey: string): Promise<string> => {
-  try {
-      const response = await fetch(`https://openlibrary.org${authorKey}.json`);
-      const data = await response.json();
-      return data.name || "Unknow author";
-  } catch (error) {
-      console.error("Errr to search author:", error);
-      return "Unknow author";
-  }
-};
+import { fetchBooks } from '../utils/fetchBooks'
 
 type Props = {
   onClose: () => void;
 };
 
-
 export function SearchModal({ onClose }: Props) {
   
-  // Put the input in focus //
+  // --------------- Put the input in focus --------------- // 
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
-  // ---------------------- //
+  // <-------------- Put the input in focus --------------> //
 
 
   const [searchTerm, setSearchTerm] = useState(""); // Catch the user's input
-  const [searchResults, setSearchResults] = useState<Book[]>([]); // Catch the books results
+  const [searchResults, setSearchResults] = useState<Book[]>([]); // Catch the books results 
 
-  const navigate = useNavigate();
+  const [bookKeySelected, setBookKeySelected] = useState(""); // Verify if the user selected a book to change the modal
+  const [bookDetails, setBookDetails] = useState<Book | null>(null); //
 
-  const handleBookClick = (bookKey: string) => {
-    const id = bookKey.replace('/works/', ''); 
-    navigate(`/book/${id}`); 
-    onClose();
-  };
+  const [loading, setLoading] = useState(true);
+  const [errorByKey, setErrorByKey] = useState<string | null>(null); 
 
-  const searchBooks = async (query: string) => {
-    // Search validation
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
+  // ------------------- Fetch books ------------------- //
 
-    try {
-      // API request
-      const response = await fetch(
-        `https://openlibrary.org/search.json?title=${encodeURIComponent(query)}`
-      );
-      
-      // Verify if the answer is valid
-      if (!response.ok) throw new Error("Error to search");
-      
-      // Extracts and types data
-      const data = await response.json() as { docs: Book[] };
-      setSearchResults(data.docs || []); // Update results
-
-      const booksWithAuthors = await Promise.all(
-      data.docs.map(async (book: any) => {
-        let authorName = "Unknow author";
-        
-        if (book.author?.key) {
-          authorName = await fetchAuthorName(book.author.key);
-        } else if (book.author_name) {
-          authorName = book.author_name.join(", ");
-        }
-        
-        return {
-          ...book,
-          authorName
+  // Fetch books from Book's title
+  useEffect(() => {
+      setLoading(true);
+        const loadData = async () => {
+          try {
+            const fetchedItems = await fetchBooks(searchTerm || "", "title");
+            setSearchResults(fetchedItems);
+          } catch (err) {
+            console.info(err instanceof Error ? err.message : 'Unknow error');
+          } finally {
+            setLoading(false);
+          }
         };
-      })
-    );
-    
-    setSearchResults(booksWithAuthors)
+  
+      loadData();
+    }, [searchTerm]);
+
+  // Fetch books from Book's ID
+    useEffect(() => {
+      setLoading(true);
+      
+      const loadData = async () => {
+        try {
+          if (bookKeySelected) {
+            const fetchedItem = await fetchBooks(bookKeySelected, "key");
+            setBookDetails(fetchedItem);
+          }
+        } catch (err) {
+          setErrorByKey(err instanceof Error ? err.message : 'Unknown error');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      loadData();
+    }, [bookKeySelected]);
+
+  // <------------------ Fetch books ------------------> //
 
 
-      } catch (error) {
-        console.error("Error:", error);
-        setSearchResults([]); // If there is any error, clean setSearchResults
-      } 
-    };
-
-  const debouncedSearch = debounce(searchBooks, 0); // 500ms de delay
-
-  return (
-    <div id="modalSearchContainer">
-        <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1  }}
-                transition={{ duration: 0.2 }}
-                id="modalSearchContent" 
-                className='borderRadius'
-            >
-                <div id="headerModalSearch">
-                    <h2 id='messageModalSearch'>Add to your books...</h2>
-                    <button id='exitModalSearch' className='borderRadius cursorPointer' onClick={onClose}>X</button>
+  return ( 
+    <div className={`${styles.modalSearchContainer}`}> 
+      <AnimatePresence>
+          <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1  }}
+              transition={{ duration: 0.2 }}
+              className={`${styles.modalSearchContent} borderRadius`}
+          >
+            {!bookKeySelected ? (
+                <>
+                <div className={`${styles.headerModalSearch}`}>
+                  <h2 className={`${styles.messageModalSearch}`}>Add to your books...</h2>
+                  <button className={`${styles.exitModalSearch} borderRadius cursorPointer`} onClick={onClose}>X</button>
                 </div>
                 
-                <div id="bodyModalSearch">
+                <div className={`${styles.bodyModalSearch}`}>
                     <input 
                     ref={inputRef}
-                    id='searchInput' 
-                    className='borderRadius' 
+                    className={`${styles.searchInput} borderRadius`} 
                     value={searchTerm} 
-                    onChange={(e) => {setSearchTerm(e.target.value); 
-                    debouncedSearch(e.target.value);}}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     type="text" 
                     autoComplete="off" 
                     placeholder="Search for book..."/>
 
                     
-                    <div id="searchResultsContainer" className='borderRadius'>
+                    <div className={`${styles.searchResultsContainer} borderRadius`} >
                     {searchTerm.trim() && ( // Do not show the results when the input is empty
                         <>
                         {searchResults.map((book) => (
-                          <div className="bookItemSearch cursorPointer" key={book.key} onClick={() => handleBookClick(book.key)}>
+                          <div className={`${styles.bookItemSearch} cursorPointer`} key={book.key} onClick={() => setBookKeySelected(book.key)}>
 
-                            <div key={book.key}>{book.title} ({book.first_publish_year})</div>
-                            <div className='authorName'> {book.author_name}</div>
+                            <div key={book.key}>{book.title}</div>
+                            <div className={`${styles.authorName}`}> {book.author_name}</div>
 
                           </div>
                           
@@ -146,9 +113,56 @@ export function SearchModal({ onClose }: Props) {
                     )}
                     </div>
                 </div>
-            </motion.div>
-        </AnimatePresence>
-    </div>
+                </>
+              ) : loading ? (
+                <div className='bookPageLoading'>
+                  <div className='loadingMessage'>  
+                    Loading...
+                  </div>
+                </div>
+              ) : (!bookDetails) ? (
+                <p style={{ color: 'red' }}>{errorByKey}</p>
+              ) : (
+                    <>
+                    <div className={`${styles.headerModalSearch}`}>
+                      <h2 className={`${styles.messageModalSearch}`}>I read...</h2>
+                      <button className={`${styles.exitModalSearch} borderRadius cursorPointer`} onClick={onClose}>X</button>
+                    </div>
+                    
+                    <div className={`${styles.bodyModalLog}`}>
+                      <div className={`${styles.bookLogContainer}`} key={bookDetails.key}>
+
+                        {bookDetails.covers?.[0] && (
+                          <img
+                            className={`${styles.bookCover} ${styles.borderRadius}`}
+                            src={`https://covers.openlibrary.org/b/id/${bookDetails.covers[0]}-L.jpg`}
+                            alt={`Cover ${bookDetails.title}`}
+                          />
+                        )}
+                        {!bookDetails.covers?.[0] &&(
+                          <img
+                            id='bookCover'
+                            src={`/img-book-template.png`}
+                            alt={`No book cover`}
+                            className={`${styles.bookCover} ${styles.borderRadius}`}
+                            />
+                        )}
+
+                        <div className={`${styles.bookReadInfoContainer}`}>
+                          <div key={bookDetails.key} className={`${styles.bookLogTitle}`}>{bookDetails.title} ({bookDetails.first_publish_year})</div>
+                          <div className={`${styles.authorName}`}> {bookDetails.author_name}</div>
+                        </div>
+                        
+
+                      </div>
+                    </div>
+                    </>
+                  )
+                }
+              
+          </motion.div>
+      </AnimatePresence>
+  </div>
         
         
       

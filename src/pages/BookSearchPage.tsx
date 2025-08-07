@@ -26,7 +26,7 @@ export function BookSearchPage() {
     setLoading(true);
       const loadData = async () => {
         try {
-          const fetchedItems = await fetchBooks(title || "");
+          const fetchedItems = await fetchBooks(title || "", "title");
           setItems(fetchedItems);
         } catch (err) {
           setError(err instanceof Error ? err.message : 'Unknow error');

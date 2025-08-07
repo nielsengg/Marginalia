@@ -14,6 +14,7 @@ export function BookDetailPage() {
   const [authorNames, setAuthorNames] = useState<string[]>([]);
 
   useEffect(() => {
+    setBook(null);
     const fetchBookDetails = async () => {
       try {
         // Search book's princiapal details
@@ -46,13 +47,13 @@ export function BookDetailPage() {
 
   // Show Loading essagen while the book deitails are not processed //
   if (!book) return (
-    <div className={`${styles.contentBody}`}>
+    <div className='contentBody'>
       <>
         <Header />
 
         <main className={`${styles.bodyBookDetail}`} style={{ margin: 0 }}>
-          <div className={`${styles.bookPageLoading}`}>
-            <div className={`${styles.loadingMessage}`}>
+          <div className='bookPageLoading'>
+            <div className='loadingMessage'>
               Loading...
             </div>
           </div>
@@ -78,7 +79,7 @@ export function BookDetailPage() {
       <main className={`${styles.bodyBookDetail}`}>
         {book.covers?.[0] && (
           <img
-            className={`${styles.bookCover} ${styles.borderRadius}`}
+            className={`${styles.bookCover} borderRadius`}
             src={`https://covers.openlibrary.org/b/id/${book.covers[0]}-L.jpg`}
             alt={`Cover ${book.title}`}
           />
@@ -88,7 +89,7 @@ export function BookDetailPage() {
             id='bookCover'
             src={`/img-book-template.png`}
             alt={`No book cover`}
-            className={`${styles.borderRadius}`}
+            className={`${styles.bookCover} borderRadius`}
             />
         )}
 

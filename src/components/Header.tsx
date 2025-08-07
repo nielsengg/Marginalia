@@ -16,10 +16,9 @@ export default function Header(){
     const inputRef = useRef<HTMLInputElement>(null);
     
     useEffect(() => {
-        if (searchBarOff) {
+        if (searchBarOff)
             inputRef.current?.focus();
-            console.info("ok");
-        }
+
     }, [searchBarOff]);
     // ---------------------- //
 
@@ -83,7 +82,7 @@ export default function Header(){
 
             {/* Verify if searchModal is open to close it */}
             {isSearchModalOpen && ( 
-                <SearchModal onClose={() => setIsSearchModalOpen(false)} /> 
+                <SearchModal onClose={() => setIsSearchModalOpen(false)} /> // Draw the Search Modal
             )} 
         </header>
     );

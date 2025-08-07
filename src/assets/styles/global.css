@@ -18,3 +18,23 @@
     height: 100%;                    
     margin: 0 auto;  
 }
+
+.borderRadius{
+    border-radius: 5px;
+}
+
+.cursorPointer{
+    cursor: pointer;
+}
+
+.bookPageLoading{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loadingMessage{
+    color: white;
+    font-size: xx-large;
+}
