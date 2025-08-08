@@ -1,6 +1,9 @@
 import styles from '../assets/styles/searchModal.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
+  
+import StarRate from '../components/StarRate'
+import HeartRate from '../components/HeartRate'
 
 import type { Book } from "../models/modelBook";
 import { fetchBooks } from '../utils/fetchBooks'
@@ -26,7 +29,16 @@ export function SearchModal({ onClose }: Props) {
   const [bookDetails, setBookDetails] = useState<Book | null>(null); //
 
   const [loading, setLoading] = useState(true);
-  const [errorByKey, setErrorByKey] = useState<string | null>(null); 
+  const [errorByKey, setErrorByKey] = useState<string | null>(null);
+
+  const today = new Date();
+  const todayDate = today.toISOString().split("T")[0];
+  const [date, setDate] = useState(todayDate);
+
+  const handleBookClick = (bookKey: string) => {
+    const id = bookKey.replace('/works/', ''); 
+    window.open(`/book/${id}`, '_blank', 'noopener,noreferrer'); 
+  };
 
   // ------------------- Fetch books ------------------- //
 
@@ -53,10 +65,9 @@ export function SearchModal({ onClose }: Props) {
       
       const loadData = async () => {
         try {
-          if (bookKeySelected) {
-            const fetchedItem = await fetchBooks(bookKeySelected, "key");
-            setBookDetails(fetchedItem);
-          }
+          
+          const fetchedItem = await fetchBooks(bookKeySelected, "key");
+          setBookDetails(fetchedItem);
         } catch (err) {
           setErrorByKey(err instanceof Error ? err.message : 'Unknown error');
         } finally {
@@ -66,6 +77,17 @@ export function SearchModal({ onClose }: Props) {
 
       loadData();
     }, [bookKeySelected]);
+
+    // Define authors name //
+    const displayPublishYear = 
+      (bookDetails && bookDetails.publish_date) ||
+      (bookDetails && bookDetails.first_publish_year) ||
+      (bookDetails && bookDetails.first_publish_date) ||
+    ["????"];
+    
+    // ------------------- //
+
+    console.info(bookDetails);  
 
   // <------------------ Fetch books ------------------> //
 
@@ -121,7 +143,13 @@ export function SearchModal({ onClose }: Props) {
                   </div>
                 </div>
               ) : (!bookDetails) ? (
-                <p style={{ color: 'red' }}>{errorByKey}</p>
+                <>
+                  <div className={`${styles.headerModalSearch}`}>
+                    <h2 className={`${styles.messageModalSearch}`}>...</h2>
+                    <button className={`${styles.exitModalSearch} borderRadius cursorPointer`} onClick={onClose}>X</button>
+                  </div>
+                  <p style={{ color: 'red' }}>{errorByKey}</p>
+                </>
               ) : (
                     <>
                     <div className={`${styles.headerModalSearch}`}>
@@ -131,10 +159,10 @@ export function SearchModal({ onClose }: Props) {
                     
                     <div className={`${styles.bodyModalLog}`}>
                       <div className={`${styles.bookLogContainer}`} key={bookDetails.key}>
-
-                        {bookDetails.covers?.[0] && (
+                        <div className={`${styles.bookCoverContainer} cursorPointer`} onClick={() => handleBookClick(bookDetails.key)}>
+                          {bookDetails.covers?.[0] && (
                           <img
-                            className={`${styles.bookCover} ${styles.borderRadius}`}
+                            className={`${styles.bookCoverLog} ${styles.borderRadius} shinyBox`}
                             src={`https://covers.openlibrary.org/b/id/${bookDetails.covers[0]}-L.jpg`}
                             alt={`Cover ${bookDetails.title}`}
                           />
@@ -144,14 +172,48 @@ export function SearchModal({ onClose }: Props) {
                             id='bookCover'
                             src={`/img-book-template.png`}
                             alt={`No book cover`}
-                            className={`${styles.bookCover} ${styles.borderRadius}`}
+                            className={`${styles.bookCoverLog} ${styles.borderRadius} shinyBox`}
                             />
                         )}
+                        </div>
+                        
 
                         <div className={`${styles.bookReadInfoContainer}`}>
-                          <div key={bookDetails.key} className={`${styles.bookLogTitle}`}>{bookDetails.title} ({bookDetails.first_publish_year})</div>
-                          <div className={`${styles.authorName}`}> {bookDetails.author_name}</div>
+                          <div className={`${styles.bookLogHeader}`}>
+                            <div className={`${styles.bookLogTitle}`}>{bookDetails.title}</div>
+                            <div className={`${styles.bookLogPublishDate}`}>({displayPublishYear})</div>
+                          </div>
+                          <div className={`${styles.bookDatesContainer}`}>
+                            <div className={`${styles.bookReadOnContainer}`}>
+                              <label className={`${styles.bookReadOnLabel}`}>
+                                <p className={`${styles.bookDatesText}`}>Readed on</p>
+                                <input className={`${styles.bookDatesInput} cursorPointer`} type="date" value={date} onChange={(e) => setDate(e.target.value)}/>
+                              </label>  
+                            </div>
+
+                            <div className={`${styles.bookReadedBefore}`}>
+                              <label className={`${styles.bookReadOnLabel}`}>
+                                <input className={`${styles.bookReadedBeforeCheckBox} cursorPointer`} type="checkbox" />
+                                <p className={`${styles.bookDatesText}`}>I’ve readed this before</p>
+                              </label>
+                            </div>
+                            
+                            
+                          </div>
+
+                          <textarea className={`${styles.bookReviewInput}`} placeholder='Add a review...'/>
+
+                        <div className={`${styles.bookLogFooter}`}>
+                            <div className={`${styles.bookRating}`}>
+                              <StarRate />
+                              <HeartRate />
+                            </div>
+
+                            <button className={`${styles.bookLogConfirm} cursorPointer shinyBox borderRadius`}>
+                              Register
+                            </button>
                         </div>
+                      </div>
                         
 
                       </div>

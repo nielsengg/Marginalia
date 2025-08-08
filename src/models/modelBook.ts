@@ -9,6 +9,9 @@ export interface Book {
   cover_edition_key?: number[];
   
   first_publish_year?: number;
+  publish_date?: number;
+  first_publish_date?: number;
+
   description?: string | { value: string };
   subjects?: string[];
 }
