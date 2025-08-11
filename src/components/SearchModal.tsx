@@ -5,8 +5,11 @@ import { useState, useRef, useEffect } from 'react';
 import StarRate from '../components/StarRate'
 import HeartRate from '../components/HeartRate'
 
+import { saveReadBook } from "../utils/saveReadBook"
+
 import type { Book } from "../models/modelBook";
 import { fetchBooks } from '../utils/fetchBooks'
+
 
 type Props = {
   onClose: () => void;
@@ -33,12 +36,33 @@ export function SearchModal({ onClose }: Props) {
 
   const today = new Date();
   const todayDate = today.toISOString().split("T")[0];
-  const [date, setDate] = useState(todayDate);
+  const [readedOnDate, setReadedOnDate] = useState(todayDate);
+
+  const [readedBefore, setReadedBefore] = useState(false);
+  const [readReview, setReadReview] = useState("");
+  const [readStarRating, setReadStarRating] = useState<number>(0);
+  const [readHeartRating, setReadHeartRating] = useState(false);
+  
+
 
   const handleBookClick = (bookKey: string) => {
     const id = bookKey.replace('/works/', ''); 
     window.open(`/book/${id}`, '_blank', 'noopener,noreferrer'); 
   };
+
+  const handleRegisterBook = () => {
+    if (bookDetails){
+      bookDetails.readedOnDate = readedOnDate;
+      bookDetails.readedBefore = readedBefore;
+      bookDetails.readReview = readReview;
+      bookDetails.readStarRating = readStarRating;
+      bookDetails.readHeartRating = readHeartRating;
+
+      saveReadBook({ bookInfo: bookDetails });
+      onClose();
+    }else
+      console.info("error to save book");
+  }
 
   // ------------------- Fetch books ------------------- //
 
@@ -86,8 +110,6 @@ export function SearchModal({ onClose }: Props) {
     ["????"];
     
     // ------------------- //
-
-    console.info(bookDetails);  
 
   // <------------------ Fetch books ------------------> //
 
@@ -187,13 +209,14 @@ export function SearchModal({ onClose }: Props) {
                             <div className={`${styles.bookReadOnContainer}`}>
                               <label className={`${styles.bookReadOnLabel}`}>
                                 <p className={`${styles.bookDatesText}`}>Readed on</p>
-                                <input className={`${styles.bookDatesInput} cursorPointer`} type="date" value={date} onChange={(e) => setDate(e.target.value)}/>
+                                <input className={`${styles.bookDatesInput} cursorPointer`} type="date" value={readedOnDate} onChange={(e) => setReadedOnDate(e.target.value)}/>
                               </label>  
                             </div>
 
                             <div className={`${styles.bookReadedBefore}`}>
                               <label className={`${styles.bookReadOnLabel}`}>
-                                <input className={`${styles.bookReadedBeforeCheckBox} cursorPointer`} type="checkbox" />
+                                <input className={`${styles.bookReadedBeforeCheckBox} cursorPointer`} type="checkbox"
+                                  onChange={() => setReadedBefore(prev => !prev)}/>
                                 <p className={`${styles.bookDatesText}`}>I’ve readed this before</p>
                               </label>
                             </div>
@@ -201,21 +224,24 @@ export function SearchModal({ onClose }: Props) {
                             
                           </div>
 
-                          <textarea className={`${styles.bookReviewInput}`} placeholder='Add a review...'/>
+                          <textarea
+                            className={`${styles.bookReviewInput}`} placeholder='Add a review...'
+                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReadReview(e.target.value)
+                          }/>
 
-                        <div className={`${styles.bookLogFooter}`}>
+                          <div className={`${styles.bookLogFooter}`}>
                             <div className={`${styles.bookRating}`}>
-                              <StarRate />
-                              <HeartRate />
+                              <StarRate setStateChange={setReadStarRating}/>
+                              <HeartRate setStateChange={setReadHeartRating}/>
                             </div>
 
-                            <button className={`${styles.bookLogConfirm} cursorPointer shinyBox borderRadius`}>
-                              Register
-                            </button>
-                        </div>
-                      </div>
-                        
 
+                            <button className={`${styles.bookSaveButton} cursorPointer shinyBox borderRadius`}
+                              onClick={() => handleRegisterBook()}>
+                                  Register
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     </>

@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { FaHeart } from "react-icons/fa"
 
-export default function HeartRate(){
+type HeartRateProps = {
+  setStateChange: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+
+export default function HeartRate({ setStateChange }: HeartRateProps){
     const [heart, setHeart] = useState(false);
     const [hover, setHover] = useState(false);
     return(
@@ -13,7 +18,10 @@ export default function HeartRate(){
             onMouseLeave={() => setHover(false)}
         >
             <FaHeart
-            onClick={() => setHeart((prev) => !prev)}
+            onClick={() => {
+                setHeart(prev => !prev);
+                setStateChange(prev => !prev);
+            }}
             color={(heart || hover) ? "rgba(205, 50, 50, 1)" : "gray"}
             />
         </div>

@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
-export default function StarRate() {
+type StarRateProps = {
+  setStateChange: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export default function StarRate({ setStateChange }: StarRateProps) {
     const [rating, setRating] = useState<number>(0);
     const [hover, setHover] = useState<number>(0);
 
     const handleClick = (index: number, isHalf: boolean) => {
         setRating(isHalf ? index + 0.5 : index + 1);
     };
+
+    // Stores the user's rating
+    useEffect(() => {
+        setStateChange(rating);
+    }, [rating]);
 
     const handleMouseMove = (e: React.MouseEvent, index: number) => {
         const { left, width } = (e.target as HTMLElement).getBoundingClientRect();
@@ -21,6 +30,7 @@ export default function StarRate() {
     const handleMouseLeave = () => {
         setHover(0);
     };
+
 
     return (
         <div
