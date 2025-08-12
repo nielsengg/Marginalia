@@ -24,11 +24,15 @@ export default function Header(){
 
 
     const navigate = useNavigate();
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const searchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Enter"){
             navigate(`/search/${titleSearch}`); 
             setIsSearchModalOpen(false);
         }
+    }
+
+    const profileClick = () => {
+        navigate(`/profile`); 
     }
 
 
@@ -36,7 +40,7 @@ export default function Header(){
         <header id="headerMarginalia">
             <div id="leftNavContainer">
                 <button className="navLink borderRadius cursorPointer">Settings</button>
-                <button className="navLink borderRadius cursorPointer">Profile</button>
+                <button className="navLink borderRadius cursorPointer" onClick={() => profileClick()}>Profile</button>
             </div>
             
 
@@ -53,7 +57,7 @@ export default function Header(){
 
                     value={titleSearch}
                     onChange={(e) => setTitleSearch(e.target.value)}
-                    onKeyDown={handleKeyDown}
+                    onKeyDown={searchKeyDown}
                     placeholder="Search a book..."
                     autoComplete="off"
                 />

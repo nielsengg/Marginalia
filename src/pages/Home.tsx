@@ -7,7 +7,7 @@ import '../assets/styles/Home.css';
 export default function Home() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   return (
-    <div id="pricipalContainer">
+    <div className='contentBody'>
         <Header />
 
         <main id="contentBody">
