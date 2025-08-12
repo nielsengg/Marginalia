@@ -3,7 +3,10 @@ import styles from '../assets/styles/Profile.module.css'
 
 export default function Profile() {
 
-return(
+    // Count items in the saved books array
+    const itemsCount = (JSON.parse(localStorage.getItem('marginaliaLibrary') ?? '[]')).length;
+
+    return(
         <>
         <div className={`contentBody`}>
             <Header />
@@ -23,38 +26,25 @@ return(
                 
 
                 <figure className={`${styles.bookReadCountContainer}`}>
-                    <h3 className={`${styles.bookReadCountNumber}`}>X</h3>
+                    <h3 className={`${styles.bookReadCountNumber}`}>{itemsCount}</h3>
                     <figcaption className={`${styles.bookReadCountText}`}>Books</figcaption>
                 </figure>
             </header>
 
             <main className={`${styles.profileBody}`}>
-                <div className={`${styles.profileSectionContainer}`}>
-                    <h3 className={`${styles.profileSubtitle}`}>Favorite Books</h3>
-                    <ol className={`${styles.profileBookList}`}>
+                <div className={`${styles.profileListContainer}`}>
+                    <div className={`${styles.bookListHeader}`}>
+                        <h3 className={`${styles.listTitle}`}>Favorite Books</h3>
+
+                        <button className={`${styles.listEditButton} cursorPointer`}>Edit</button>
+                    </div>
+                    
+                    <ol className={`${styles.bookListBody}`}>
                         <li className={`${styles.bookItem} borderRadius`}>
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
                         </li>
                         <li className={`${styles.bookItem} borderRadius`}>
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />                                             
-                        </li>
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                        </li>
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                        </li>
-                    </ol>
-                </div>
-
-                <div className={`${styles.profileSectionContainer}`}>
-                    <h3 className={`${styles.profileSubtitle}`}>Recent Activity</h3>
-                    <ol className={`${styles.profileBookList}`}>
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                        </li>
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
                         </li>
                         <li className={`${styles.bookItem} borderRadius`}>
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />

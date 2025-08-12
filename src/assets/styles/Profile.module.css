@@ -76,7 +76,7 @@
 
 }
 
-.profileSectionContainer{
+.profileListContainer{
     width: 100%;
 
     display: flex;
@@ -84,8 +84,11 @@
     margin-bottom: 2rem;
 }
 
-.profileSubtitle{
-    color: rgb(188, 188, 188);
+.bookListHeader{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
     padding-bottom: 0.3rem;
     margin: 0 0 0.6rem 0;
@@ -93,7 +96,25 @@
     border-bottom: 0.1rem solid rgba(255, 255, 255, 0.571);
 }
 
-.profileBookList{
+.listTitle{
+    color: rgb(188, 188, 188);
+
+    margin: 0;
+}
+
+.listEditButton{
+    background-color: none;
+    background: none;
+    border: 0;
+
+    color: rgba(255, 255, 255, 0.571);
+}
+
+.listEditButton:hover{
+    color: rgb(188, 188, 188);
+}
+
+.bookListBody{
     list-style-type: none;
     /* background-color: aquamarine; */
 
@@ -112,7 +133,6 @@
 .bookItem{
     height: 100%;
     width: 14rem;
-    background-color: brown;
 
     box-sizing: border-box;
 }
