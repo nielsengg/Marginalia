@@ -83,7 +83,7 @@ export function SearchModal({ onClose }: Props) {
       loadData();
     }, [searchTerm]);
 
-  // Fetch books from Book's ID
+    // Fetch books from Book's ID
     useEffect(() => {
       setLoading(true);
       
@@ -183,20 +183,20 @@ export function SearchModal({ onClose }: Props) {
                       <div className={`${styles.bookLogContainer}`} key={bookDetails.key}>
                         <div className={`${styles.bookCoverContainer} cursorPointer`} onClick={() => handleBookClick(bookDetails.key)}>
                           {bookDetails.covers?.[0] && (
-                          <img
-                            className={`${styles.bookCoverLog} ${styles.borderRadius} shinyBox`}
-                            src={`https://covers.openlibrary.org/b/id/${bookDetails.covers[0]}-L.jpg`}
-                            alt={`Cover ${bookDetails.title}`}
-                          />
-                        )}
-                        {!bookDetails.covers?.[0] &&(
-                          <img
-                            id='bookCover'
-                            src={`/img-book-template.png`}
-                            alt={`No book cover`}
-                            className={`${styles.bookCoverLog} ${styles.borderRadius} shinyBox`}
+                            <img
+                              className={`${styles.bookCoverLog} ${styles.borderRadius} shinyBox`}
+                              src={`https://covers.openlibrary.org/b/id/${bookDetails.covers[0]}-L.jpg`}
+                              alt={`Cover ${bookDetails.title}`}
                             />
-                        )}
+                          )}
+                          {!bookDetails.covers?.[0] &&(
+                            <img
+                              id='bookCover'
+                              src={`/img-book-template.png`}
+                              alt={`No book cover`}
+                              className={`${styles.bookCoverLog} ${styles.borderRadius} shinyBox`}
+                              />
+                          )}
                         </div>
                         
 

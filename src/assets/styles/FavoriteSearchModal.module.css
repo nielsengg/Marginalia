@@ -1,0 +1,256 @@
+.bookItemSearch{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 0.8vw;
+
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.authorName{
+    font-size: 0.9rem;
+
+    color: rgb(65, 65, 65);
+}
+
+.bookItemSearch:hover{
+    background-color: rgb(205, 177, 50);
+}
+
+.modalSearchContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.482);
+    backdrop-filter: blur(5px);
+    
+    transition: opacity 0.3s ease-in-out; 
+
+    z-index: 9999;
+}
+
+.modalSearchContent{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 45%;
+
+    opacity: 100%;
+
+    background-color: #2e2c2c;
+
+    box-shadow: 0px 0px 80px 10px rgba(0, 0, 0, 0.418);
+
+    position: relative;
+
+    padding-bottom: 1.5rem;
+}
+
+.bookCoverContainer{
+    width: 20%;
+}
+
+.bookCoverLog{
+    width: 100%;
+    border: 3px solid;
+    border-color: white;
+}
+
+.headerModalSearch{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0 1rem 0.5rem 1rem;
+
+    margin: 0.5rem 0 0 0;
+    
+    border-bottom: 1px solid rgba(255, 255, 255, 0.377);
+
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.messageModalSearch{
+    margin: 0;
+    font-weight: normal;
+    color: white;
+}
+
+.exitModalSearch{
+    font-size: larger;
+    color: white;
+    
+    height: 2rem;
+
+    background: none;
+}
+
+.exitModalSearch:hover, .bookReadedBeforeCheckBox:hover{
+    box-shadow: 0px 0px 5px rgb(255, 255, 255)
+}
+
+
+
+.bodyModalSearch{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: space-around;  
+
+    box-sizing: border-box;
+
+    width: 100%;
+    padding: 2rem;
+    gap: 3rem;
+    padding-bottom: 0;
+}
+
+.searchInput{
+    width: 80%;
+    height: 2rem;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    border: none;
+}
+
+.searchResultsContainer{
+    position: absolute;
+    top: 100%; 
+    left: 13.5%;
+    width: 73%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: rgb(202, 202, 202);
+    z-index: 9999;
+    border-radius: 0 0 8px 8px;
+}
+
+.bodyModalLog{
+    display: flex;
+    flex-direction: row;
+    align-items: center;    
+
+    width: 100%;
+    max-height: 100vh;
+
+    padding-top: 1.5rem;
+
+    transition: height 0.3s ease;
+}
+
+.bookLogContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+
+    width: 100%;
+
+    gap: 1.5rem;
+
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+    
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+
+.bookCover{
+    max-height: 15rem;
+    max-width: 15rem;
+
+    border: 3px solid;
+    border-color: white;
+    
+    box-shadow: 2px 2px 20px 2px black;
+}
+
+.bookReadInfoContainer{
+    display: flex;
+    flex-direction: column;
+    
+    max-width: 75%;
+
+
+
+    flex-wrap: wrap;
+
+}
+
+.bookLogHeader{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    gap: 0.3rem;
+
+    align-items: center;
+
+    margin-bottom: 1rem;
+}
+
+.bookLogTitle{
+    color: white;
+    font-size: x-large;
+}
+
+.bookLogPublishDate{
+    font-size: x-large;
+    color: rgb(188, 188, 188);
+}
+
+.bookDatesContainer{
+    display: flex;
+    flex-direction: row;
+
+    min-width:25rem;
+
+    margin-bottom: 1rem;
+
+    justify-content: space-between;
+}
+
+.bookDescription{
+    color: rgb(188, 188, 188);
+
+    margin: 0.4rem 0 0.6rem 0;
+
+    width: 100%;
+
+    text-align: justify;
+    line-height: 1.2;
+    overflow-wrap: break-word;
+
+}
+
+.bookLogFooter{
+    width: 100%;
+
+    padding-right: 2rem;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+}

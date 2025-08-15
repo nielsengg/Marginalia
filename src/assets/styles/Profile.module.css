@@ -18,13 +18,14 @@
     /* width: 100%; */
     height: 100%;
 
-    gap: 1rem;
+    gap: 0.5rem;
 }
 
 .userPhotoContainer{
     aspect-ratio: 1/1;
     height: 60%;
-    /* background-color: violet; */
+    
+    margin-right: 0.5rem;
     
 }
 
@@ -42,8 +43,11 @@
 }
 
 .editProfileButton{
-    height: 1.3rem;
-    /* padding: 0 1rem 0 1rem; */
+    padding: 0;
+    background: none;
+    border: 0;
+
+    color: rgba(255, 255, 255, 0.571);
 }
 
 .bookReadCountContainer{
@@ -110,7 +114,7 @@
     color: rgba(255, 255, 255, 0.571);
 }
 
-.listEditButton:hover{
+.listEditButton:hover, .editProfileButton:hover{
     color: rgb(188, 188, 188);
 }
 
@@ -134,11 +138,37 @@
     height: 100%;
     width: 14rem;
 
+    position: relative;
+
     box-sizing: border-box;
 }
 
 .bookItemCover{
     height: 100%;
     width: 100%;
+
     
+    
+}
+
+.bookItemEditBanner{
+    height: 100%;
+    width: 100%;
+
+    background-color: rgba(0, 0, 0, 0.6);
+ 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    top: 0;
+}
+
+.bookItemEditBannerPlus, .bookItemEditBannerPlus svg{
+    width: 15%;
+    height: 100%;
+
+    color: white;
+
 }
