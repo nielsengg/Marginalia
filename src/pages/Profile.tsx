@@ -12,12 +12,19 @@ export default function Profile() {
     // Count items in the saved books array
     const itemsCount = (JSON.parse(localStorage.getItem('marginaliaLibrary') ?? '[]')).length;
 
+    // It is on if the user clicks to edit the Favorite Books
     const [editModeOn, setEditMode] = useState(false);
+
+    // This preserves the word that will be showed in the Edit button (Edit/Cancel)
     const [editFavoriteMessage, setEditFavoriteMessage] = useState("Edit");
 
+    // This variable controls when the Search Modal will appear
     const [changeFavoriteBook, setChangeFavoriteBook] = useState(false);
+
+    // This preserves what of the four Favorite Books will be changed
     const [favoriteItemID, setFavoriteItemID] = useState("");
 
+    // Change the edit message
     useEffect(() => {
           if (editModeOn) 
             setEditFavoriteMessage("Cancel");
@@ -27,9 +34,13 @@ export default function Profile() {
 
     return(
         <>
+
+        {/* all page */}
         <div className={`contentBody`}>
+            {/* call header */}
             <Header />
             
+            {/* Profile Header */}
             <header className={`${styles.profileHeader}`}>
                 <div className={`${styles.userInfo}`}>
                     <div className={`${styles.userPhotoContainer}`}>
