@@ -1,0 +1,1 @@
+**Marginalia** is a dedicated digital cataloging platform designed for readers to systematically organize and track their personal libraries. The project enables users to maintain a comprehensive log of their reading history, rate titles, and curate specific collections through personalized lists.
