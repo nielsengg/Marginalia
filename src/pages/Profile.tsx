@@ -21,16 +21,36 @@ export default function Profile() {
     // This variable controls when the Search Modal will appear
     const [changeFavoriteBook, setChangeFavoriteBook] = useState(false);
 
-    // This preserves what of the four Favorite Books will be changed
+    // This preserves what of the four Favorite Books will be changed 
     const [favoriteItemID, setFavoriteItemID] = useState("");
+
+    // State to store the loaded favorite books
+    const [favoriteBooks, setFavoriteBooks] = useState<Record<string, any>>({});
+
+    // Function to load favorites from localStorage 
+    const loadFavoriteBooks = () => {
+        const savedFavorites = JSON.parse(localStorage.getItem('marginaliaFavorites') ?? '[]');
+        
+        // Convert array to an object mapped by favoriteID for easy lookup
+        const favoritesMap: Record<string, any> = {};
+        savedFavorites.forEach((fav: any) => {
+            favoritesMap[fav.favoriteID] = fav;
+        });
+        
+        setFavoriteBooks(favoritesMap);
+    };
+
+    // Load favorite books when the profile page opens
+    useEffect(() => {
+        loadFavoriteBooks();
+    }, []);
 
     // Change the edit message
     useEffect(() => {
-          if (editModeOn) 
-            setEditFavoriteMessage("Cancel");
-          else
-            setEditFavoriteMessage("Edit");
-        }, [editModeOn]);
+        setEditFavoriteMessage(editModeOn ? "Cancel" : "Edit");
+    }, [editModeOn]);
+
+    const favoriteSlots = ["firstFavorite", "secondFavorite", "thirdFavorite", "fourthFavorite"];
 
     return(
         <>
@@ -78,49 +98,42 @@ export default function Profile() {
 
                     {/* Favorite Books Banners */}
                     <ol className={`${styles.bookListBody}`}>
-                        {/* First Favorite Books Banners */}
-                        <li className={`${styles.bookItem} borderRadius`}>
+                        {favoriteSlots.map((slotId) => {
+                            const savedBook = favoriteBooks[slotId];
                             
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                            { editModeOn ? (
-                                <div className={`${styles.bookItemEditBanner} shinyBox borderRadius`} onClick={() => {setChangeFavoriteBook(true); setFavoriteItemID("firstFavorite"); setEditMode(false)}}>
-                                    <FaPlus className={`${styles.bookItemEditBannerPlus} cursorPointer`} />
-                                </div>
-                            ) : (<></>)}
-                        </li>
-                        {/* Second Favorite Books Banners */}
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                            { editModeOn ? (
-                                <div className={`${styles.bookItemEditBanner} shinyBox borderRadius`} onClick={() => {setChangeFavoriteBook(true); setFavoriteItemID("secondFavorite"); setEditMode(false)}}>
-                                    <FaPlus className={`${styles.bookItemEditBannerPlus} cursorPointer`} />
-                                </div>
-                            ) : (<></>)}                                          
-                        </li>
-                        {/* Third Favorite Books Banners */}
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                            { editModeOn ? (
-                                <div className={`${styles.bookItemEditBanner} shinyBox borderRadius`} onClick={() => {setChangeFavoriteBook(true); setFavoriteItemID("thirdFavorite"); setEditMode(false)}}>
-                                    <FaPlus className={`${styles.bookItemEditBannerPlus} cursorPointer`} />
-                                </div>
-                            ) : (<></>)}
-                        </li>
-                        {/* Fourth Favorite Books Banners */}
-                        <li className={`${styles.bookItem} borderRadius`}>
-                            <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
-                            { editModeOn ? (
-                                <div className={`${styles.bookItemEditBanner} shinyBox borderRadius`} onClick={() => {setChangeFavoriteBook(true); setFavoriteItemID("fourthFavorite"); setEditMode(false)}}>
-                                    <FaPlus className={`${styles.bookItemEditBannerPlus} cursorPointer`} />
-                                </div>
-                            ) : (<></>)}
-                        </li>
+                            // If the book has a saved coverId, fetch it. Otherwise use template.
+                            const coverUrl = savedBook?.coverId 
+                                ? `https://covers.openlibrary.org/b/id/${savedBook.coverId}-L.jpg`
+                                : "img-book-template.png";
+
+                            return (
+                                <li key={slotId} className={`${styles.bookItem} borderRadius`}>
+                                    <img className={`${styles.bookItemCover}`} src={coverUrl} alt="Favorite book cover" />
+                                    { editModeOn && (
+                                        <div className={`${styles.bookItemEditBanner} shinyBox borderRadius`} 
+                                             onClick={() => {
+                                                 setChangeFavoriteBook(true); 
+                                                 setFavoriteItemID(slotId); 
+                                                 setEditMode(false)
+                                             }}>
+                                            <FaPlus className={`${styles.bookItemEditBannerPlus} cursorPointer`} />
+                                        </div>
+                                    )}
+                                </li>
+                            );
+                        })}
                     </ol>
                 </div>
             </main>
             
-            {changeFavoriteBook && ( // Draw the Search Modal
-                <FavoriteSearchModal onClose={() => setChangeFavoriteBook(false)} favoriteID={favoriteItemID} /> 
+            {changeFavoriteBook && (
+                <FavoriteSearchModal 
+                    onClose={() => {
+                        setChangeFavoriteBook(false);
+                        loadFavoriteBooks(); // <--- NEW: Reload the covers immediately when the modal closes!
+                    }} 
+                    favoriteID={favoriteItemID} 
+                /> 
             )}
         </div>
 

@@ -45,7 +45,8 @@ export function FavoriteSearchModal({ onClose, favoriteID }: Props) {
         const favoriteBookToSave: favoriteBook = {
             favoriteID: favoriteID,
             key: bookKeySelected,
-            favoritedDay: todayDate
+            favoritedDay: todayDate,
+            coverId: bookDetails?.covers?.[0] || undefined
         };
 
         if (bookKeySelected){

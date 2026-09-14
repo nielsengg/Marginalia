@@ -2,4 +2,5 @@
     favoriteID: string;
     key: string;
     favoritedDay: string;
+    coverId?: number;
   }
