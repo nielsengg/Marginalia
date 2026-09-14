@@ -43,10 +43,12 @@ export default function Profile() {
             {/* Profile Header */}
             <header className={`${styles.profileHeader}`}>
                 <div className={`${styles.userInfo}`}>
+                    {/* User's photo section */}
                     <div className={`${styles.userPhotoContainer}`}>
                         <img className={`${styles.userPhoto} shinyBox`} src="img-book-template.png" alt="User's photo" />
                     </div>
 
+                    {/* Username section */}
                     <h2 className={`${styles.userName}`}>
                         Gustavo Nielsen
                     </h2>
@@ -56,8 +58,9 @@ export default function Profile() {
                     </button>
                 </div>
                 
-
+                {/* Book counter */}
                 <figure className={`${styles.bookReadCountContainer}`}>
+                    
                     <h3 className={`${styles.bookReadCountNumber}`}>{itemsCount}</h3>
                     <figcaption className={`${styles.bookReadCountText}`}>Books</figcaption>
                 </figure>
@@ -65,14 +68,19 @@ export default function Profile() {
 
             <main className={`${styles.profileBody}`}>
                 <div className={`${styles.profileListContainer}`}>
+                    {/* Favorite Books Section */}
                     <div className={`${styles.bookListHeader}`}>
+                        {/* Favorite Books Label */}
                         <h3 className={`${styles.listTitle}`}>Favorite Books</h3>
 
                         <button className={`${styles.listEditButton} cursorPointer`} onClick={() => setEditMode(prev => !prev)}>{editFavoriteMessage}</button>
                     </div>
-                    
+
+                    {/* Favorite Books Banners */}
                     <ol className={`${styles.bookListBody}`}>
+                        {/* First Favorite Books Banners */}
                         <li className={`${styles.bookItem} borderRadius`}>
+                            
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
                             { editModeOn ? (
                                 <div className={`${styles.bookItemEditBanner} shinyBox borderRadius`} onClick={() => {setChangeFavoriteBook(true); setFavoriteItemID("firstFavorite"); setEditMode(false)}}>
@@ -80,6 +88,7 @@ export default function Profile() {
                                 </div>
                             ) : (<></>)}
                         </li>
+                        {/* Second Favorite Books Banners */}
                         <li className={`${styles.bookItem} borderRadius`}>
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
                             { editModeOn ? (
@@ -88,6 +97,7 @@ export default function Profile() {
                                 </div>
                             ) : (<></>)}                                          
                         </li>
+                        {/* Third Favorite Books Banners */}
                         <li className={`${styles.bookItem} borderRadius`}>
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
                             { editModeOn ? (
@@ -96,6 +106,7 @@ export default function Profile() {
                                 </div>
                             ) : (<></>)}
                         </li>
+                        {/* Fourth Favorite Books Banners */}
                         <li className={`${styles.bookItem} borderRadius`}>
                             <img className={`${styles.bookItemCover}`} src="img-book-template.png" alt="Favorite book cover" />
                             { editModeOn ? (
@@ -107,8 +118,9 @@ export default function Profile() {
                     </ol>
                 </div>
             </main>
-            {changeFavoriteBook && ( 
-                <FavoriteSearchModal onClose={() => setChangeFavoriteBook(false)} favoriteID={favoriteItemID} /> // Draw the Search Modal
+            
+            {changeFavoriteBook && ( // Draw the Search Modal
+                <FavoriteSearchModal onClose={() => setChangeFavoriteBook(false)} favoriteID={favoriteItemID} /> 
             )}
         </div>
 

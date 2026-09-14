@@ -1,3 +1,5 @@
+// It is the modal used to add a favorite book
+
 import styles from '../assets/styles/FavoriteSearchModal.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect } from 'react';
@@ -24,11 +26,13 @@ export function FavoriteSearchModal({ onClose, favoriteID }: Props) {
     }, []);
     // <-------------- Put the input in focus --------------> //
 
+    // Catch the user's input
+    const [searchTerm, setSearchTerm] = useState(""); 
+    // Catch the books results
+    const [searchResults, setSearchResults] = useState<Book[]>([]);  
 
-    const [searchTerm, setSearchTerm] = useState(""); // Catch the user's input
-    const [searchResults, setSearchResults] = useState<Book[]>([]); // Catch the books results 
-
-    const [bookKeySelected, setBookKeySelected] = useState(""); // Verify if the user selected a book to change the modal
+    // Verify if the user selected a book to change the modal
+    const [bookKeySelected, setBookKeySelected] = useState("");
 
     const today = new Date();
     const todayDate = today.toISOString().split("T")[0];
@@ -36,6 +40,7 @@ export function FavoriteSearchModal({ onClose, favoriteID }: Props) {
     const [bookDetails, setBookDetails] = useState<Book | null>(null); //
 
 
+    // The function that calls to save the Favorite Books' info
     const handleFavoriteBook = () => {
         const favoriteBookToSave: favoriteBook = {
             favoriteID: favoriteID,
