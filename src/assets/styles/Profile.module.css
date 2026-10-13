@@ -1,310 +1,363 @@
+/* src/assets/styles/Profile.module.css */
 .profileHeader {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
-
-    grid-row: span 2;
-    grid-column: 4 / span 10;
-
-    margin-top: 3rem;
+    padding: 1.75rem 2rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    flex-wrap: wrap;
 }
 
 .userInfo {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    height: 100%;
-    gap: 0.5rem;
+    gap: 1.25rem;
 }
 
 .userPhotoContainer {
-    aspect-ratio: 1/1;
-    height: 60%;
-    margin-right: 0.5rem;
+    width: 5.2rem;
+    height: 5.2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--accent-gold);
+    flex-shrink: 0;
+    background: #111;
 }
 
 .userPhoto {
-    height: 100%;
     width: 100%;
-    border-radius: 50%;
-    border: solid 1px;
+    height: 100%;
     object-fit: cover;
 }
 
 .userDetailsBlock {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.35rem;
 }
 
 .userNameWrapper {
     display: flex;
-    flex-direction: row;
     align-items: center;
     gap: 0.5rem;
 }
 
 .userName {
-    color: white;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
     margin: 0;
+}
+
+.iconActionBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.iconActionBtn:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-gold);
+    background: rgba(229, 184, 66, 0.12);
 }
 
 .userBio {
     margin: 0;
-    font-size: 0.85rem;
-    color: rgb(188, 188, 188);
-    max-width: 26rem;
-}
-
-.editProfileButton {
-    padding: 0;
-    background: none;
-    border: 0;
-    color: rgba(255, 255, 255, 0.571);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    max-width: 28rem;
+    line-height: 1.4;
 }
 
 .countersGroup {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 1.8rem;
+    gap: 1.5rem;
 }
 
-.bookReadCountContainer {
+.statBox {
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    margin: 0;
+    align-items: center;
+    min-width: 4.5rem;
 }
 
-.bookReadCountNumber {
-    margin: 0;
-    text-align: center;
-    font-size: 1.5rem;
-    color: white;
+.statNumber {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
-.bookReadCountText {
-    color: azure;
-    font-size: 0.85rem;
+.statLabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    margin-top: 0.15rem;
+}
+
+.statDivider {
+    width: 1px;
+    height: 2.4rem;
+    background: var(--border-subtle);
 }
 
 .goalBarTrack {
     width: 100%;
-    min-width: 4.5rem;
-    height: 0.3rem;
-    background-color: rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 99px;
     overflow: hidden;
-    margin-top: 0.25rem;
+    margin-top: 0.35rem;
 }
 
 .goalBarFill {
     height: 100%;
-    background-color: rgb(205, 177, 50);
+    background: var(--accent-gold);
     transition: width 0.3s ease;
 }
 
-.profileBody {
-    height: 100%;
-    width: 100%;
-
-    grid-row: 4 / span 8;
-    grid-column: 4 / span 10;
-}
-
-/* Barra de Abas */
+/* Abas do Perfil */
 .profileTabsNav {
     display: flex;
-    flex-direction: row;
-    gap: 1.5rem;
-    margin-bottom: 1.8rem;
-    border-bottom: 0.1rem solid rgba(255, 255, 255, 0.2);
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 2rem;
+    overflow-x: auto;
 }
 
 .tabBtn {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.571);
-    font-size: 0.95rem;
-    padding: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.75rem 1.1rem;
     border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .tabBtn:hover {
-    color: rgb(188, 188, 188);
+    color: var(--text-primary);
 }
 
 .activeTabBtn {
-    color: white;
-    border-bottom: 2px solid rgb(205, 177, 50);
+    color: var(--accent-gold);
+    border-bottom-color: var(--accent-gold);
 }
 
-.profileListContainer {
-    width: 100%;
+.profileBody {
     display: flex;
     flex-direction: column;
-    margin-bottom: 2.2rem;
+    gap: 2.5rem;
 }
 
-.bookListHeader {
-    width: 100%;
+.sectionBlock {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.sectionHeader {
+    display: flex;
     justify-content: space-between;
     align-items: center;
-
-    padding-bottom: 0.3rem;
-    margin: 0 0 0.6rem 0;
-
-    border-bottom: 0.1rem solid rgba(255, 255, 255, 0.571);
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 0.45rem;
 }
 
-.listTitle {
-    color: rgb(188, 188, 188);
+.sectionTitle {
     margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
 }
 
-.listEditButton {
+.sectionActionBtn {
     background: none;
-    border: 0;
-    color: rgba(255, 255, 255, 0.571);
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
-.listEditButton:hover,
-.editProfileButton:hover {
-    color: rgb(188, 188, 188);
+.sectionActionBtn:hover {
+    color: var(--accent-gold);
 }
 
-.bookListBody {
-    list-style-type: none;
-    height: 15rem;
-    width: 100%;
+.sectionSubtleMeta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
 
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 0.5rem;
-
+/* Grades de Capas (4 colunas para Favoritos/Recentes, 5 para Biblioteca) */
+.fourPostersGrid {
+    list-style: none;
     margin: 0;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
 }
 
-.bookItem {
-    height: 100%;
-    width: 14rem;
-    position: relative;
-    box-sizing: border-box;
+.fivePostersGrid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.15rem;
+}
+
+.posterCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.posterTitle {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.bookItemCover {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
+/* Overlay de Edição/Exclusão dos Favoritos */
+.favoriteEditOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(14, 17, 20, 0.78);
+    backdrop-filter: blur(2px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    cursor: pointer;
 }
 
-.bookItemEditBanner {
-    height: 100%;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-
+.plusCircle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent-gold);
+    color: #111;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    position: absolute;
-    top: 0;
+    transition: transform 0.15s ease;
 }
 
-.bookItemEditBannerPlus,
-.bookItemEditBannerPlus svg {
-    width: 15%;
-    height: 100%;
+.favoriteEditOverlay:hover .plusCircle {
+    transform: scale(1.08);
+}
+
+.removeFavoriteBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(224, 79, 95, 0.2);
+    color: #ff8592;
+    border: 1px solid var(--accent-crimson);
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.removeFavoriteBtn:hover {
+    background: var(--accent-crimson);
     color: white;
 }
 
-/* Avaliações abaixo da capa (Recent Activity & Library) */
-.bookSlotWithRating {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    height: 100%;
-}
-
+/* Linha de estrelas e ícones abaixo da capa */
 .bookMetaRow {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0 0.15rem;
+    padding: 0 2px;
 }
 
 .starsContainer {
     display: flex;
-    flex-direction: row;
-    gap: 0.1rem;
+    gap: 2px;
 }
 
 .metaBadges {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 0.35rem;
+    gap: 6px;
 }
 
-/* Seção Dupla: Lendo Agora + Histograma */
-.splitSection {
+/* Seção de 2 Colunas */
+.twoColumnsLayout {
     display: grid;
-    grid-template-columns: 1.3fr 1fr;
+    grid-template-columns: 1.35fr 1fr;
     gap: 2rem;
-    width: 100%;
-    margin-top: 1rem;
 }
 
 .readingCardsList {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.75rem;
 }
 
 .readingCard {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 0.8rem;
-    background-color: rgba(255, 255, 255, 0.04);
-    padding: 0.6rem;
-    border-radius: 6px;
+    gap: 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    padding: 0.85rem;
+    border-radius: var(--radius-md);
 }
 
-.readingCoverSmall {
-    width: 3.2rem;
-    height: 4.8rem;
-    object-fit: cover;
-    border-radius: 4px;
+.readingThumbFrame {
+    width: 3.6rem;
 }
 
 .readingDetails {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.3rem;
 }
 
 .readingTitle {
     margin: 0;
-    color: white;
     font-size: 0.95rem;
+    color: var(--text-primary);
 }
 
 .readingAuthor {
-    color: rgb(188, 188, 188);
     font-size: 0.8rem;
+    color: var(--text-secondary);
 }
 
 .pageTrackerRow {
@@ -312,39 +365,59 @@
     align-items: center;
     gap: 0.4rem;
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
 }
 
 .pageNumberInput {
-    width: 3.5rem;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    border-radius: 4px;
-    padding: 0.1rem 0.3rem;
+    width: 4rem;
+    padding: 0.2rem 0.4rem;
+    font-size: 0.8rem;
+}
+
+.readingRowActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    align-items: center;
 }
 
 .finishBookButton {
-    background-color: rgb(205, 177, 50);
-    color: black;
+    background: var(--accent-gold);
+    color: #111;
     border: none;
     border-radius: 50%;
-    width: 2rem;
-    height: 2rem;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
-/* Histograma de Notas */
-.histogramBox {
+.deleteIconBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease;
+}
+
+.deleteIconBtn:hover {
+    color: var(--accent-crimson);
+}
+
+/* Histograma */
+.histogramCard {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1rem 0.85rem 1rem;
+    height: 10.5rem;
     display: flex;
-    flex-direction: row;
     align-items: flex-end;
-    justify-content: space-between;
-    height: 8.5rem;
-    gap: 0.6rem;
-    padding-top: 0.8rem;
+    gap: 0.75rem;
 }
 
 .histogramCol {
@@ -357,14 +430,14 @@
 
 .histogramValue {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.571);
-    margin-bottom: 0.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
 }
 
 .histogramBarBg {
     flex: 1;
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
     border-radius: 4px 4px 0 0;
     display: flex;
     align-items: flex-end;
@@ -373,41 +446,17 @@
 
 .histogramBarFill {
     width: 100%;
-    background-color: rgb(205, 177, 50);
+    background: var(--accent-gold);
     transition: height 0.3s ease;
 }
 
 .histogramStarsLabel {
     font-size: 0.75rem;
-    color: rgb(188, 188, 188);
-    margin-top: 0.3rem;
+    color: var(--text-secondary);
+    margin-top: 0.35rem;
 }
 
-/* Grade Completa (Library e Want to Read) */
-.fullLibraryGrid {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.2rem;
-}
-
-.gridBookItem {
-    width: 100%;
-    aspect-ratio: 2 / 3;
-    overflow: hidden;
-}
-
-.gridBookTitle {
-    color: white;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Diário de Leituras */
+/* Diário */
 .diaryWrapper {
     display: flex;
     flex-direction: column;
@@ -416,61 +465,64 @@
 
 .diaryMonthSection {
     display: flex;
-    flex-direction: row;
     gap: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding-bottom: 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1.2rem;
 }
 
-.diaryMonthLabel {
-    width: 6rem;
-    font-weight: bold;
-    font-size: 0.85rem;
-    color: rgb(188, 188, 188);
+.diaryMonthBadge {
+    width: 5.5rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--accent-gold);
+    letter-spacing: 0.05em;
 }
 
 .diaryEntriesList {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.65rem;
 }
 
 .diaryEntryRow {
     display: flex;
-    flex-direction: row;
     align-items: center;
     gap: 1rem;
-    padding: 0.5rem;
-    border-radius: 6px;
-    background-color: rgba(255, 255, 255, 0.03);
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.diaryEntryRow:hover {
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .diaryDayNum {
     font-size: 1.1rem;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 0.571);
-    width: 2rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    width: 1.8rem;
 }
 
-.diaryThumb {
-    width: 2.4rem;
-    height: 3.6rem;
-    object-fit: cover;
-    border-radius: 3px;
+.diaryMiniFrame {
+    width: 2.5rem;
 }
 
 .diaryTitleColumn {
     flex: 1;
     display: flex;
     flex-direction: column;
-    color: white;
 }
 
 .diaryReviewSnippet {
     margin: 0.2rem 0 0 0;
     font-size: 0.8rem;
-    color: rgb(188, 188, 188);
+    color: var(--text-secondary);
     font-style: italic;
 }
 
@@ -478,41 +530,38 @@
 .customListsGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.2rem;
+    gap: 1.25rem;
 }
 
 .customListCard {
     display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    padding: 0.8rem;
-    background-color: rgba(255, 255, 255, 0.04);
-    border-radius: 6px;
+    gap: 1.2rem;
+    padding: 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
 }
 
 .stackedCoversPreview {
     position: relative;
-    width: 6.5rem;
-    height: 5.5rem;
+    width: 7rem;
+    height: 5.7rem;
+    flex-shrink: 0;
 }
 
-.stackedCoverImg {
+.stackedCoverFrame {
     position: absolute;
     top: 0;
-    width: 3.6rem;
-    height: 5.4rem;
-    object-fit: cover;
-    border-radius: 4px;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.6);
+    width: 3.8rem;
 }
 
 .customListMeta {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    color: rgb(188, 188, 188);
+    gap: 0.35rem;
     font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
 .customListTitleRow {
@@ -523,34 +572,47 @@
 
 .customListTitleRow h4 {
     margin: 0;
-    color: white;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.emptyCard {
+    background: var(--bg-elevated);
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 /* Modais */
 .modalBackdrop {
     position: fixed;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 1500;
 }
 
 .modalContainer {
-    background-color: #1c2228;
-    padding: 1.5rem;
-    width: 100%;
-    max-width: 24rem;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--bg-elevated);
+    padding: 1.75rem;
+    width: 90%;
+    max-width: 25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-cover);
+    box-shadow: var(--shadow-soft);
 }
 
 .modalTopRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 .modalTopRow h3 {
@@ -560,24 +622,16 @@
 .modalForm {
     display: flex;
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.9rem;
 }
 
 .modalForm label {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.85rem;
-    color: rgb(188, 188, 188);
-}
-
-.modalForm input,
-.modalForm textarea {
-    background-color: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 0.45rem;
-    border-radius: 4px;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
 .bookSelectorBox {
@@ -585,43 +639,39 @@
     flex-direction: column;
     gap: 0.4rem;
     font-size: 0.85rem;
-    color: rgb(188, 188, 188);
+    color: var(--text-secondary);
 }
 
 .bookSelectorList {
-    max-height: 7rem;
+    max-height: 8rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.3rem;
 }
 
 .selectableBookRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.35rem 0.5rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    color: white;
+    padding: 0.45rem 0.65rem;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
 }
 
 .selectedBookRow {
-    border: 1px solid rgb(205, 177, 50);
+    border: 1px solid var(--accent-gold);
 }
 
 .modalSubmitBtn {
-    background-color: rgb(205, 177, 50);
-    color: black;
-    font-weight: bold;
+    background: var(--accent-gold);
+    color: #111;
+    font-weight: 700;
     border: none;
-    padding: 0.6rem;
-    border-radius: 4px;
+    padding: 0.7rem;
+    border-radius: var(--radius-sm);
     margin-top: 0.4rem;
-}
-
-.emptyNotice {
-    color: rgba(255, 255, 255, 0.571);
-    font-style: italic;
-    font-size: 0.9rem;
+    cursor: pointer;
 }

@@ -1,305 +1,317 @@
-.bookItemSearch{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    gap: 0.8vw;
-
-    padding-top: 1vh;
-    padding-bottom: 1vh;
-    
-    padding-left: 2rem;
-    padding-right: 2rem;
-}
-
-.authorName{
-    font-size: 0.9rem;
-
-    color: rgb(65, 65, 65);
-}
-
-.bookItemSearch:hover{
-    background-color: rgb(205, 177, 50);
-}
-
-.modalSearchContainer{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    position: absolute;
+/* src/assets/styles/searchModal.module.css */
+.modalSearchContainer {
+    position: fixed;
     top: 0;
     left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(10, 12, 15, 0.8);
+    backdrop-filter: blur(6px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    padding: 1.5rem;
+}
 
+.modalSearchContent {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-cover);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    padding-bottom: 1.5rem;
+    margin: auto;
+}
+
+.headerModalSearch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    width: 100%;
+}
+
+.messageModalSearch {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.exitModalSearch {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    height: 2rem;
+    width: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+}
+
+.exitModalSearch:hover {
+    color: white;
+    border-color: var(--accent-crimson);
+    background: var(--accent-crimson);
+}
+
+.bodyModalSearch {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+}
+
+.searchInput {
+    width: 100%;
+    height: 2.6rem;
+    padding: 0 0.9rem;
+    font-size: 0.95rem;
+}
+
+.searchResultsContainer {
+    width: 100%;
+    max-height: 260px;
+    overflow-y: auto;
+    background-color: #161b20;
+    border: 1px solid var(--border-subtle);
+    margin-top: 0.4rem;
+    border-radius: var(--radius-sm);
+}
+
+.bookItemSearch {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background 0.15s ease;
+}
+
+.bookItemSearch:hover {
+    background-color: rgba(229, 184, 66, 0.15);
+}
+
+.searchItemTitle {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+}
+
+.searchItemYear {
+    font-weight: normal;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.authorName {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+.searchingHint {
+    padding: 0.85rem 1rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Tela de Registro do Livro */
+.bodyModalLog {
+    width: 100%;
+    padding: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.bookLogContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    gap: 1.5rem;
+}
+
+.bookCoverContainer {
+    width: 8.5rem;
+    min-width: 8.5rem;
+    max-width: 8.5rem;
+    aspect-ratio: 2 / 3;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-cover);
+    overflow: hidden;
+    background: #14181c;
+    box-shadow: var(--shadow-cover);
+}
+
+.bookCoverLog {
     width: 100%;
     height: 100%;
-
-    background-color: rgba(0, 0, 0, 0.482);
-    backdrop-filter: blur(5px);
-    
-    transition: opacity 0.3s ease-in-out; 
+    object-fit: cover;
+    display: block;
 }
 
-.modalSearchContent{
+.bookReadInfoContainer {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    height: auto;
-    width: 45%;
-
-    opacity: 100%;
-
-    background-color: #2e2c2c;
-
-    box-shadow: 0px 0px 80px 10px rgba(0, 0, 0, 0.418);
-
-    position: relative;
-
-    padding-bottom: 1.5rem;
+    gap: 0.85rem;
 }
 
-.bookCoverContainer{
-    width: 9rem;
-    
-    
-    
-    /* box-shadow: 2px 2px 20px 2px black; */
-}
-
-.bookCoverLog{
-    width: 100%;
-    border: 3px solid;
-    border-color: white;
-}
-
-.headerModalSearch{
+.bookLogHeader {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-
-    padding: 0 1rem 0.5rem 1rem;
-
-    margin: 0.5rem 0 0 0;
-    
-    border-bottom: 1px solid rgba(255, 255, 255, 0.377);
-
-    width: 95%;
-}
-
-.messageModalSearch{
-    margin: 0;
-    font-weight: normal;
-    color: white;
-}
-
-.exitModalSearch{
-    font-size: larger;
-    color: white;
-    
-    height: 2rem;
-
-    background: none;
-}
-
-.exitModalSearch:hover, .bookReadedBeforeCheckBox:hover{
-    box-shadow: 0px 0px 5px rgb(255, 255, 255)
-}
-
-
-
-.bodyModalSearch{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;    
-
-    width: 100%;
-    /* max-height: 8rem; */
-
-    padding-top: 1.5rem;
-}
-
-.searchInput{
-    width: 80%;
-    height: 2rem;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    border: none;
-}
-
-.searchResultsContainer{
-    position: absolute;
-    top: 100%; 
-    left: 10%;
-    width: 80%;
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: rgb(202, 202, 202);
-    z-index: 9999;
-    border-radius: 0 0 8px 8px;
-}
-
-.bodyModalLog{
-    display: flex;
-    flex-direction: row;
-    align-items: center;    
-
-    width: 100%;
-    max-height: 100vh;
-
-    padding-top: 1.5rem;
-
-    transition: height 0.3s ease;
-}
-
-.bookLogContainer{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: start;
-
-    width: 100%;
-
-    gap: 1.5rem;
-
-    padding-top: 1vh;
-    padding-bottom: 1vh;
-    
-    padding-left: 2rem;
-    padding-right: 2rem;
-}
-
-
-.bookCover{
-    max-height: 15rem;
-    max-width: 15rem;
-
-    border: 3px solid;
-    border-color: white;
-    
-    box-shadow: 2px 2px 20px 2px black;
-}
-
-.bookReadInfoContainer{
-    display: flex;
-    flex-direction: column;
-    
     flex-wrap: wrap;
-
-    min-height: 15rem;
-    width: 75%;
-    max-width: 75%;
+    gap: 0.4rem;
+    align-items: baseline;
 }
 
-.bookLogHeader{
+.bookLogTitle {
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.bookLogPublishDate {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.bookDatesContainer {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
-
-    gap: 0.3rem;
-
-    align-items: center;
-
-    margin-bottom: 1rem;
-}
-
-.bookLogTitle{
-    color: white;
-    font-size: x-large;
-}
-
-.bookLogPublishDate{
-    font-size: x-large;
-    color: rgb(188, 188, 188);
-}
-
-.bookDatesContainer{
-    display: flex;
-    flex-direction: row;
-
-    min-width:25rem;
-
-    margin-bottom: 1rem;
-
+    gap: 1.2rem;
     justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
 }
 
-.bookReadOnContainer{
+.bookReadOnLabel {
     display: flex;
-    flex-direction: row;
-}
-
-.bookReadedBeforeCheckBox{
-    height: 1rem;
-    width: 1rem;
-    margin: 0;
-}
-
-
-.bookReadOnLabel{
-    display: flex;
-    flex-direction: row;
     gap: 0.5rem;
     align-items: center;
 }
 
-.bookDatesText{
-    font-size: 0.9rem;
-    color: rgb(188, 188, 188);
+.bookDatesText {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
     margin: 0;
-
-    text-align: end;
-
-    height: 1rem;;
 }
 
-.bookDatesInput{
-    border: none;
-    padding: 1px;
+.bookDatesInput {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.82rem;
+}
 
+.bookReadedBeforeCheckBox {
     height: 1rem;
+    width: 1rem;
+    margin: 0;
+    accent-color: var(--accent-gold);
 }
 
-.bookReviewInput{
-    box-sizing: border-box;
+.bookReviewInput {
     width: 100%;
-    min-height: 7rem;
-
-    text-align: start;
-    vertical-align: top;
-    line-height: 1.2;
-
-    padding: 0.4rem;
-    vertical-align: top;
-
-    resize: none;
-
-    text-wrap: wrap;
-
-    margin-bottom: 1rem;
+    min-height: 6.5rem;
+    line-height: 1.45;
+    resize: vertical;
 }
 
-.bookReviewInput:focus{
-    min-height: 20rem;
-}
-
-.bookLogFooter{
+.bookLogFooter {
     width: 100%;
-
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    margin-top: 0.25rem;
 }
 
-.bookRating{
+.bookRating {
     display: flex;
-    flex-direction: row;
-    align-items: end;
-    gap: 0.7rem;
+    align-items: center;
+    gap: 0.85rem;
+}
 
-    width: 30%;
+.headerLeftActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.backButton {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
+}
+
+.modeSelectorTabs {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.modeTab {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.activeModeTab {
+    background: var(--accent-gold);
+    color: #111;
+    border-color: var(--accent-gold);
+}
+
+.alternateModeBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.2rem;
+    min-height: 8rem;
+}
+
+.modeHelperText {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.pagesInputsRow {
+    display: flex;
+    gap: 1.2rem;
+}
+
+.pageFieldLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.pageInputModal {
+    width: 6.5rem;
+}
+
+.bookSaveButton {
+    background-color: var(--accent-gold);
+    color: #111;
+    font-weight: 700;
+    border: none;
+    padding: 0.55rem 1.25rem;
 }

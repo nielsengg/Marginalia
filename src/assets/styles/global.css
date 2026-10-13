@@ -1,52 +1,185 @@
-input{
-    background-color: rgb(217, 217, 217);
+/* src/assets/styles/global.css */
+:root {
+    --bg-main: #14181c;
+    --bg-elevated: #1c2228;
+    --bg-card: #222930;
+    --bg-card-hover: #2a333c;
+    --bg-glass: rgba(20, 24, 28, 0.85);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #9ab;
+    --text-muted: #678;
+
+    --accent-gold: #e5b842;
+    --accent-gold-hover: #f2c955;
+    --accent-crimson: #e04f5f;
+    --accent-green: #00e054;
+
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-cover: rgba(255, 255, 255, 0.18);
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-cover: 0 6px 16px rgba(0, 0, 0, 0.6);
+
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
 }
 
-img{
-    object-fit: cover;
+* {
+    box-sizing: border-box;
 }
 
-#root{
-    height: 100vh;
-    width: 100vw;
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
 
-    background: linear-gradient(to bottom, .2D2D2D, .232222);
-
-    overflow-y: scroll;
+#root {
+    min-height: 100vh;
+    width: 100%;
+    background: radial-gradient(circle at 50% 0%, #232a32 0%, #14181c 65%);
     overflow-x: hidden;
 }
 
-.contentBody{
-    display: grid;                         
-    grid-template-columns: repeat(16, 1fr);
-    grid-template-rows:  50px minmax(300px, 300px) auto;
-    column-gap: 20px;                             
-
-    max-width: 1200px;
-    min-height: 100%;                    
-    margin: 0 auto;  
+/* Container principal fluido e centralizado (substitui a gambiarra das 16 colunas) */
+.contentBody {
+    width: 100%;
+    max-width: 1060px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem 1.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
-.borderRadius{
-    border-radius: 5px;
+/* =========================================================
+   QUADRO DE CAPA COM TAMANHO TRAVADO (ZERO LAYOUT SHIFT)
+   Garante que a borda NUNCA fique pequena enquanto carrega
+========================================================= */
+@keyframes coverPulse {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
-.cursorPointer{
+:where(.coverFrame) {
+    width: 100%;
+}
+
+.coverFrame {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-cover);
+    box-shadow: var(--shadow-cover);
+    overflow: hidden;
+    background: linear-gradient(90deg, #1d232a 25%, #28303a 50%, #1d232a 75%);
+    background-size: 200% 100%;
+    animation: coverPulse 1.8s infinite linear;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+}
+
+.coverFrame:hover {
+    border-color: var(--accent-gold);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.75);
+}
+
+.coverFrame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Botão flutuante de deletar sobre a capa */
+.coverDeleteBtn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(15, 18, 22, 0.85);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    z-index: 5;
     cursor: pointer;
 }
 
-.shinyBox:hover{
-    box-shadow: 0px 0px 10px rgb(255, 255, 255);
+.coverFrame:hover .coverDeleteBtn {
+    opacity: 1;
 }
 
-.bookPageLoading{
-    height: 100%;
+.coverDeleteBtn:hover {
+    background: var(--accent-crimson);
+    color: white;
+    border-color: var(--accent-crimson);
+    transform: scale(1.08);
+}
+
+/* Utilitários gerais */
+input,
+textarea,
+select {
+    background-color: #12161a;
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.75rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--accent-gold);
+}
+
+button {
+    font-family: inherit;
+}
+
+.borderRadius {
+    border-radius: var(--radius-sm);
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.shinyBox {
+    transition: all 0.2s ease;
+}
+
+.shinyBox:hover {
+    filter: brightness(1.08);
+}
+
+.bookPageLoading {
+    min-height: 50vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.loadingMessage{
-    color: white;
-    font-size: xx-large;
+.loadingMessage {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
 }

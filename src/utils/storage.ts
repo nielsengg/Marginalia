@@ -1,3 +1,4 @@
+// src/utils/storage.ts
 import type { Book } from '../models/modelBook';
 
 const DB_NAME = 'MarginaliaDB';
@@ -21,7 +22,6 @@ const ALL_KEYS: StorageKey[] = [
     'marginaliaLists',
 ];
 
-// Abre (ou cria) o banco IndexedDB no navegador
 function openDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -38,7 +38,6 @@ function openDB(): Promise<IDBDatabase> {
     });
 }
 
-// Lê um valor do IndexedDB
 async function idbGet<T>(key: StorageKey): Promise<T | null> {
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -51,7 +50,6 @@ async function idbGet<T>(key: StorageKey): Promise<T | null> {
     });
 }
 
-// Salva um valor no IndexedDB
 async function idbSet<T>(key: StorageKey, value: T): Promise<void> {
     const db = await openDB();
     return new Promise((resolve, reject) => {
@@ -64,12 +62,25 @@ async function idbSet<T>(key: StorageKey, value: T): Promise<void> {
     });
 }
 
+/**
+ * Helper global para buscar capas mais rápidas (-M para grades/listas, -L apenas para página de detalhe)
+ */
+export function getOpenLibraryCover(book: any, size: 'M' | 'L' = 'M'): string {
+    if (!book) return '/img-book-template.png';
+
+    const coverId = book.coverId ?? book.covers?.[0] ?? book.cover_i;
+    if (coverId) {
+        return `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg`;
+    }
+
+    if (typeof book.cover_edition_key === 'string' && book.cover_edition_key) {
+        return `https://covers.openlibrary.org/b/olid/${book.cover_edition_key}-${size}.jpg`;
+    }
+
+    return '/img-book-template.png';
+}
+
 export const marginaliaStorage = {
-    /**
-     * Busca um dado no IndexedDB.
-     * Se ainda não existir no IndexedDB mas existir no localStorage antigo,
-     * faz a migração automática sem perder seus dados!
-     */
     async get<T>(key: StorageKey, fallback: T): Promise<T> {
         try {
             const dbValue = await idbGet<T>(key);
@@ -77,7 +88,6 @@ export const marginaliaStorage = {
                 return dbValue;
             }
 
-            // Migração automática do localStorage legado
             const legacyRaw = localStorage.getItem(key);
             if (legacyRaw) {
                 const parsed = JSON.parse(legacyRaw) as T;
@@ -85,36 +95,77 @@ export const marginaliaStorage = {
                 return parsed;
             }
         } catch (error) {
-            console.error(`Erro ao ler ${key} do IndexedDB:`, error);
+            console.error(`Erro ao ler ${key}:`, error);
             const legacyRaw = localStorage.getItem(key);
             if (legacyRaw) return JSON.parse(legacyRaw) as T;
         }
         return fallback;
     },
 
-    /**
-     * Salva no IndexedDB (capacidade de centenas de MBs) e mantém
-     * cópia sincronizada no localStorage para compatibilidade com outros componentes.
-     */
     async set<T>(key: StorageKey, value: T): Promise<void> {
         try {
             await idbSet(key, value);
             localStorage.setItem(key, JSON.stringify(value));
         } catch (error) {
-            console.error(`Erro ao salvar ${key} no IndexedDB:`, error);
+            console.error(`Erro ao salvar ${key}:`, error);
             localStorage.setItem(key, JSON.stringify(value));
         }
+        window.dispatchEvent(new Event('marginalia-storage-update'));
     },
 
     /**
-     * Exporta toda a sua biblioteca, favoritos, listas e perfil em um arquivo .JSON
+     * Remove um livro do histórico de leitura (marginaliaLibrary)
+     * Se houver mais de um registro do mesmo livro, remove a ocorrência específica
      */
+    async removeLibraryBook(bookKey: string, readedOnDate?: string): Promise<Book[]> {
+        const books = await this.get<Book[]>('marginaliaLibrary', []);
+        let removed = false;
+
+        const updated = books.filter((b) => {
+            if (!removed && b.key === bookKey && (!readedOnDate || b.readedOnDate === readedOnDate)) {
+                removed = true;
+                return false;
+            }
+            return true;
+        });
+
+        await this.set('marginaliaLibrary', updated);
+        return updated;
+    },
+
+    /**
+     * Remove um livro de um slot de Favoritos (ex: 'firstFavorite')
+     */
+    async removeFavoriteSlot(slotId: string): Promise<void> {
+        const favs = await this.get<any[]>('marginaliaFavorites', []);
+        const updated = favs.filter((f) => f.favoriteID !== slotId);
+        await this.set('marginaliaFavorites', updated);
+    },
+
+    /**
+     * Remove um livro de "Currently Reading"
+     */
+    async removeCurrentlyReading(bookKey: string): Promise<void> {
+        const reading = await this.get<any[]>('marginaliaCurrentlyReading', []);
+        const updated = reading.filter((item) => item.key !== bookKey);
+        await this.set('marginaliaCurrentlyReading', updated);
+    },
+
+    /**
+     * Remove um livro de "Want to Read"
+     */
+    async removeWantToRead(bookKey: string): Promise<void> {
+        const watchlist = await this.get<Book[]>('marginaliaWantToRead', []);
+        const updated = watchlist.filter((item) => item.key !== bookKey);
+        await this.set('marginaliaWantToRead', updated);
+    },
+
     async exportBackup(): Promise<void> {
         const backupData: Record<string, any> = {
             _meta: {
                 app: 'Marginalia',
                 exportedAt: new Date().toISOString(),
-                version: 1,
+                version: 2,
             },
         };
 
@@ -136,9 +187,6 @@ export const marginaliaStorage = {
         URL.revokeObjectURL(url);
     },
 
-    /**
-     * Importa um arquivo .JSON de backup e restaura todos os dados no IndexedDB e localStorage
-     */
     async importBackup(file: File): Promise<boolean> {
         try {
             const text = await file.text();
@@ -151,16 +199,8 @@ export const marginaliaStorage = {
             }
             return true;
         } catch (error) {
-            console.error('Erro ao importar arquivo de backup:', error);
+            console.error('Erro ao importar backup:', error);
             return false;
         }
     },
 };
-
-// Helper dedicado para adicionar um livro lido à biblioteca
-export async function addBookToLibraryDB(bookInfo: Book): Promise<Book[]> {
-    const books = await marginaliaStorage.get<Book[]>('marginaliaLibrary', []);
-    books.push(bookInfo);
-    await marginaliaStorage.set('marginaliaLibrary', books);
-    return books;
-}
