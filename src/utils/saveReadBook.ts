@@ -1,31 +1,19 @@
 import type { Book } from '../models/modelBook';
+import { marginaliaStorage } from './storage';
 
-export function saveReadBook(props: { bookInfo: Book }) {
-    const stored = localStorage.getItem("marginaliaLibrary");
+export async function saveReadBook(props: { bookInfo: Book }) {
+    const books = await marginaliaStorage.get<Book[]>('marginaliaLibrary', []);
 
-    let books: Book[] = [];
-
-    if (stored) {
-        try {
-            const parsed = JSON.parse(stored);
-            if (Array.isArray(parsed)) {
-                books = parsed;
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
-    const { 
-        key, 
-        title, 
-        covers, 
-        author_name, 
-        readedOnDate, 
-        readedBefore, 
-        readReview, 
-        readStarRating, 
-        readHeartRating 
+    const {
+        key,
+        title,
+        covers,
+        author_name,
+        readedOnDate,
+        readedBefore,
+        readReview,
+        readStarRating,
+        readHeartRating,
     } = props.bookInfo;
 
     const newBook: Book = {
@@ -37,10 +25,10 @@ export function saveReadBook(props: { bookInfo: Book }) {
         readedBefore,
         readReview,
         readStarRating,
-        readHeartRating
+        readHeartRating,
     };
 
     books.push(newBook);
 
-    localStorage.setItem("marginaliaLibrary", JSON.stringify(books));
+    await marginaliaStorage.set('marginaliaLibrary', books);
 }
